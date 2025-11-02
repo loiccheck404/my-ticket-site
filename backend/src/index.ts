@@ -1,28 +1,34 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import console = require("console");
+import matchRoutes from "./routes/matchRoutes";
+import { errorHandler } from "./middleware/errorHandler";
 
-//Load environment variables
+// Load environment variables
 dotenv.config();
 
-//Inititalize Express app
+// Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-//Middleware
-app.use(cors()); //Allow frontend to communicate with backend
-app.use(express.json()); //Parse JSON request bodies
+// Middleware
+app.use(cors()); // Allow frontend to communicate with backend
+app.use(express.json()); // Parse JSON request bodies
 
-//Test route - to verify server is working
+// Test route - to verify server is working
 app.get("/", (req: Request, res: Response) => {
   res.json({
     message: "Ticket Booking API is running!",
     status: "success",
+    version: "1.0.0",
+    endpoints: {
+      health: "/api/health",
+      matches: "/api/matches",
+    },
   });
 });
 
-//Health check route
+// Health check route
 app.get("/api/health", (req: Request, res: Response) => {
   res.json({
     status: "healthy",
@@ -30,7 +36,22 @@ app.get("/api/health", (req: Request, res: Response) => {
   });
 });
 
-//start the server
+// API Routes
+app.use("/api/matches", matchRoutes);
+
+// 404 handler - for routes that don't exist
+app.use((req: Request, res: Response) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
+});
+
+// Error handling middleware (must be last)
+app.use(errorHandler);
+
+// Start the server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
+  console.log(`📚 API Documentation: http://localhost:${PORT}/`);
 });
