@@ -1,0 +1,91 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model - People who buy tickets
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String
+  firstName     String
+  lastName      String
+  walletAddress String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  orders        Order[]
+}
+
+// Match Model - Sports events/games
+model Match {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  date        DateTime
+  venue       String
+  imageUrl    String
+  category    String   // "Single Match", "Venue Series", "Follow Team"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tickets     Ticket[]
+}
+
+// Ticket Model - Different ticket types for matches
+model Ticket {
+  id             String      @id @default(uuid())
+  matchId        String
+  match          Match       @relation(fields: [matchId], references: [id])
+  type           String      // "Pitchside", "VIP", "Champions Club", etc.
+  price          Float
+  availableCount Int
+  totalCount     Int
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  orderItems     OrderItem[]
+}
+
+// Order Model - User purchases
+model Order {
+  id            String        @id @default(uuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  totalAmount   Float
+  status        String        // "pending", "confirmed", "cancelled"
+  paymentMethod String        // "crypto"
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  orderItems    OrderItem[]
+  transaction   Transaction?
+}
+
+// OrderItem Model - Junction table (connects Orders and Tickets)
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  quantity  Int
+  price     Float
+  createdAt DateTime @default(now())
+}
+
+// Transaction Model - Crypto payment records
+model Transaction {
+  id             String   @id @default(uuid())
+  orderId        String   @unique
+  order          Order    @relation(fields: [orderId], references: [id])
+  txHash         String   @unique
+  walletAddress  String
+  amount         Float
+  cryptocurrency String   // "ETH", "USDT", "BTC", etc.
+  status         String   // "pending", "confirmed", "failed"
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
