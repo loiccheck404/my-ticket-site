@@ -58,4 +58,43 @@ router.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
+// POST /api/matches - Create a new match
+router.post("/", async (req: Request, res: Response) => {
+  try {
+    const { title, description, date, venue, category, imageUrl } = req.body;
+
+    // Validate required fields
+    if (!title || !date || !venue || !imageUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields: title, date, venue, imageUrl",
+      });
+    }
+
+    // Create the match
+    const match = await prisma.match.create({
+      data: {
+        title,
+        description: description || "",
+        date: new Date(date),
+        venue,
+        imageUrl,
+        category: category || "Single Match",
+      },
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Match created successfully!",
+      data: match,
+    });
+  } catch (error) {
+    console.error("Error creating match:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error creating match",
+    });
+  }
+});
+
 export default router;
