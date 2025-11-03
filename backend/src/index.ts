@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import matchRoutes from "./routes/matchRoutes";
 import { errorHandler } from "./middleware/errorHandler";
+import authRoutes from "./routes/authRoutes";
 
 // Load environment variables
 dotenv.config();
@@ -24,6 +25,7 @@ app.get("/", (req: Request, res: Response) => {
     endpoints: {
       health: "/api/health",
       matches: "/api/matches",
+      auth: "/api/auth",
     },
   });
 });
@@ -38,6 +40,8 @@ app.get("/api/health", (req: Request, res: Response) => {
 
 // API Routes
 app.use("/api/matches", matchRoutes);
+
+app.use("/api/auth", authRoutes);
 
 // 404 handler - for routes that don't exist
 app.use((req: Request, res: Response) => {
