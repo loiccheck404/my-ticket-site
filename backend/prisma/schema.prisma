@@ -30,10 +30,11 @@ model Match {
   date        DateTime
   venue       String
   imageUrl    String
-  category    String   // "Single Match", "Venue Series", "Follow Team"
+  category    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   tickets     Ticket[]
+  seats       Seat[]
 }
 
 // Ticket Model - Different ticket types for matches
@@ -41,13 +42,33 @@ model Ticket {
   id             String      @id @default(uuid())
   matchId        String
   match          Match       @relation(fields: [matchId], references: [id])
-  type           String      // "Pitchside", "VIP", "Champions Club", etc.
+  type           String
   price          Float
   availableCount Int
   totalCount     Int
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
   orderItems     OrderItem[]
+  seats          Seat[]
+}
+
+// Seat Model - Individual seats in the stadium
+model Seat {
+  id          String     @id @default(uuid())
+  matchId     String
+  match       Match      @relation(fields: [matchId], references: [id])
+  ticketId    String
+  ticket      Ticket     @relation(fields: [ticketId], references: [id])
+  seatNumber  String
+  row         String
+  section     String
+  isBooked    Boolean    @default(false)
+  orderItemId String?    @unique
+  orderItem   OrderItem? @relation(fields: [orderItemId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@unique([matchId, seatNumber])
 }
 
 // Order Model - User purchases
@@ -56,15 +77,15 @@ model Order {
   userId        String
   user          User          @relation(fields: [userId], references: [id])
   totalAmount   Float
-  status        String        // "pending", "confirmed", "cancelled"
-  paymentMethod String        // "crypto"
+  status        String
+  paymentMethod String
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   orderItems    OrderItem[]
   transaction   Transaction?
 }
 
-// OrderItem Model - Junction table (connects Orders and Tickets)
+// OrderItem Model
 model OrderItem {
   id        String   @id @default(uuid())
   orderId   String
@@ -74,9 +95,10 @@ model OrderItem {
   quantity  Int
   price     Float
   createdAt DateTime @default(now())
+  seat      Seat?
 }
 
-// Transaction Model - Crypto payment records
+// Transaction Model
 model Transaction {
   id             String   @id @default(uuid())
   orderId        String   @unique
@@ -84,8 +106,8 @@ model Transaction {
   txHash         String   @unique
   walletAddress  String
   amount         Float
-  cryptocurrency String   // "ETH", "USDT", "BTC", etc.
-  status         String   // "pending", "confirmed", "failed"
+  cryptocurrency String
+  status         String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
