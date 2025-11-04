@@ -238,7 +238,23 @@ export default function MatchDetails() {
                 <span className="text-yellow-500">${totalPrice}</span>
               </div>
             </div>
-            <button className="w-full bg-yellow-500 text-black py-3 rounded-lg font-bold hover:bg-yellow-400 transition">
+            <button
+              onClick={() => {
+                const seatsData = selectedSeatsData.map((seat) => ({
+                  id: seat.id,
+                  seatNumber: seat.seatNumber,
+                  section: seat.section,
+                  price: seat.ticket.price,
+                }));
+
+                router.push(
+                  `/checkout?seats=${encodeURIComponent(
+                    JSON.stringify(seatsData)
+                  )}&match=${encodeURIComponent(match.title)}`
+                );
+              }}
+              className="w-full bg-yellow-500 text-black py-3 rounded-lg font-bold hover:bg-yellow-400 transition"
+            >
               Proceed to Checkout
             </button>
           </div>
