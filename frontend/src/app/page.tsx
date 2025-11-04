@@ -77,7 +77,12 @@ export default function Home() {
                     {new Date(match.date).toLocaleDateString()}
                   </p>
                   <p className="text-gray-400 mb-4">{match.description}</p>
-                  <button className="w-full bg-yellow-500 text-black py-2 rounded-lg font-semibold hover:bg-yellow-400 transition">
+                  <button
+                    onClick={() =>
+                      (window.location.href = `/matches/${match.id}`)
+                    }
+                    className="w-full bg-yellow-500 text-black py-2 rounded-lg font-semibold hover:bg-yellow-400 transition"
+                  >
                     Book Tickets
                   </button>
                 </div>
