@@ -37,7 +37,7 @@ export default function MatchDetails() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedTicketType, setSelectedTicketType] = useState<string>("");
-  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [selectedSeatsData, setSelectedSeatsData] = useState<Seat[]>([]); // Store full seat objects
   const [loading, setLoading] = useState(true);
 
   // Fetch match details
@@ -78,19 +78,27 @@ export default function MatchDetails() {
     }
   }, [matchId, selectedTicketType]);
 
-  // Toggle seat selection
-  const toggleSeat = (seatId: string) => {
-    if (selectedSeats.includes(seatId)) {
-      setSelectedSeats(selectedSeats.filter((id) => id !== seatId));
+  // Toggle seat selection - now stores full seat object
+  const toggleSeat = (seat: Seat) => {
+    const isSelected = selectedSeatsData.some((s) => s.id === seat.id);
+
+    if (isSelected) {
+      // Remove seat
+      setSelectedSeatsData(selectedSeatsData.filter((s) => s.id !== seat.id));
     } else {
-      setSelectedSeats([...selectedSeats, seatId]);
+      // Add seat with full data
+      setSelectedSeatsData([...selectedSeatsData, seat]);
     }
   };
 
-  // Calculate total price
-  const totalPrice = selectedSeats.reduce((total, seatId) => {
-    const seat = seats.find((s) => s.id === seatId);
-    return total + (seat?.ticket.price || 0);
+  // Check if a seat is selected
+  const isSeatSelected = (seatId: string) => {
+    return selectedSeatsData.some((s) => s.id === seatId);
+  };
+
+  // Calculate total price from all selected seats
+  const totalPrice = selectedSeatsData.reduce((total, seat) => {
+    return total + seat.ticket.price;
   }, 0);
 
   // Group seats by row
@@ -147,7 +155,6 @@ export default function MatchDetails() {
                 key={ticket.id}
                 onClick={() => {
                   setSelectedTicketType(ticket.type);
-                  setSelectedSeats([]); // Clear selections when changing type
                 }}
                 className={`px-6 py-4 rounded-lg font-semibold transition ${
                   selectedTicketType === ticket.type
@@ -188,9 +195,9 @@ export default function MatchDetails() {
                       {rowSeats.map((seat) => (
                         <button
                           key={seat.id}
-                          onClick={() => toggleSeat(seat.id)}
+                          onClick={() => toggleSeat(seat)}
                           className={`w-10 h-10 rounded text-xs font-semibold transition ${
-                            selectedSeats.includes(seat.id)
+                            isSeatSelected(seat.id)
                               ? "bg-yellow-500 text-black"
                               : "bg-gray-700 text-white hover:bg-gray-600"
                           }`}
@@ -206,29 +213,24 @@ export default function MatchDetails() {
           </div>
         )}
 
-        {/* Selected Seats Summary */}
-        {selectedSeats.length > 0 && (
+        {/* Selected Seats Summary - Shows ALL selected seats */}
+        {selectedSeatsData.length > 0 && (
           <div className="bg-gray-900 p-6 rounded-lg border border-yellow-500/20">
             <h3 className="text-xl font-bold text-white mb-4">
-              Selected Seats
+              Selected Seats ({selectedSeatsData.length})
             </h3>
             <div className="space-y-2 mb-4">
-              {selectedSeats.map((seatId) => {
-                const seat = seats.find((s) => s.id === seatId);
-                return seat ? (
-                  <div
-                    key={seatId}
-                    className="flex justify-between text-gray-300"
-                  >
-                    <span>
-                      Seat {seat.seatNumber} ({seat.section})
-                    </span>
-                    <span className="text-yellow-500">
-                      ${seat.ticket.price}
-                    </span>
-                  </div>
-                ) : null;
-              })}
+              {selectedSeatsData.map((seat) => (
+                <div
+                  key={seat.id}
+                  className="flex justify-between text-gray-300"
+                >
+                  <span>
+                    Seat {seat.seatNumber} ({seat.section})
+                  </span>
+                  <span className="text-yellow-500">${seat.ticket.price}</span>
+                </div>
+              ))}
             </div>
             <div className="border-t border-gray-700 pt-4 mb-4">
               <div className="flex justify-between text-white text-xl font-bold">
