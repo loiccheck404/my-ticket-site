@@ -26,7 +26,7 @@ async function testPaymentAPI() {
   console.log("=".repeat(60));
 
   // IMPORTANT: Replace this with a real order ID from your database
-  const TEST_ORDER_ID = "test-order-id-replace-me";
+  const TEST_ORDER_ID = "7e871a3f-2624-453d-b169-e691077ed199";
 
   console.log(`\n📝 Using Order ID: ${TEST_ORDER_ID}`);
   console.log(
