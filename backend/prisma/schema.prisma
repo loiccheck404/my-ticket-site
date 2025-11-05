@@ -98,16 +98,28 @@ model OrderItem {
   seat      Seat?
 }
 
-// Transaction Model
+// Transaction Model - Crypto payment tracking
 model Transaction {
-  id             String   @id @default(uuid())
-  orderId        String   @unique
-  order          Order    @relation(fields: [orderId], references: [id])
-  txHash         String   @unique
-  walletAddress  String
-  amount         Float
-  cryptocurrency String
-  status         String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id             String    @id @default(uuid())
+  orderId        String    @unique
+  order          Order     @relation(fields: [orderId], references: [id])
+  
+  // Payment details
+  amount         Float              // USD amount (e.g., 300.00)
+  cryptocurrency String             // Which crypto: BTC, ETH, USDT
+  cryptoAmount   Float              // Crypto amount to send (e.g., 0.005)
+  exchangeRate   Float              // Exchange rate at time (e.g., 60000)
+  
+  // Blockchain details
+  walletAddress  String             // Unique address for this order
+  txHash         String?   @unique  // Blockchain transaction hash (proof of payment)
+  confirmations  Int       @default(0) // Number of blockchain confirmations
+  
+  // Status tracking
+  status         String             // PENDING, CONFIRMING, COMPLETED, EXPIRED, FAILED
+  expiresAt      DateTime           // Payment must arrive before this (30 min)
+  confirmedAt    DateTime?          // When payment was confirmed
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
