@@ -5,6 +5,7 @@ import matchRoutes from "./routes/matchRoutes";
 import { errorHandler } from "./middleware/errorHandler";
 import authRoutes from "./routes/authRoutes";
 import bookingRoutes from "./routes/bookingRoutes";
+import paymentRoutes from "./routes/paymentRoutes";
 
 // Load environment variables
 dotenv.config();
@@ -47,6 +48,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/matches", bookingRoutes);
 
 app.use("/api/bookings", bookingRoutes);
+
+app.use("/api/payment", paymentRoutes);
 
 // 404 handler - for routes that don't exist
 app.use((req: Request, res: Response) => {
