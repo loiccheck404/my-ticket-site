@@ -1,8 +1,10 @@
 import axios from "axios";
+import crypto from "crypto";
 import { CryptoType } from "./priceConverter";
 import {
   WALLET_ADDRESSES,
   REQUIRED_CONFIRMATIONS,
+  DEMO_MODE,
 } from "../config/walletConfig";
 
 export interface Transaction {
@@ -24,6 +26,63 @@ export interface PaymentCheckResult {
   isComplete: boolean;
   confirmations: number;
   needsMoreConfirmations: number;
+}
+
+// Demo mode: Track check counts and simulate payment
+const demoCheckCounts = new Map<string, number>();
+
+/**
+ * Demo mode: Simulate payment detection
+ * Simulates payment after 3 checks and increases confirmations each check
+ */
+function simulatePayment(
+  walletAddress: string,
+  expectedAmount: number,
+  cryptocurrency: CryptoType
+): PaymentCheckResult {
+  const key = `${cryptocurrency}-${walletAddress}-${expectedAmount}`;
+  const checkCount = (demoCheckCounts.get(key) || 0) + 1;
+  demoCheckCounts.set(key, checkCount);
+
+  console.log(`[DEMO MODE] Check #${checkCount} for ${cryptocurrency} payment`);
+
+  // Simulate: Payment appears after 3rd check
+  if (checkCount < 3) {
+    return {
+      found: false,
+      expectedAmount,
+      isComplete: false,
+      confirmations: 0,
+      needsMoreConfirmations: REQUIRED_CONFIRMATIONS[cryptocurrency],
+    };
+  }
+
+  // Simulate: Payment found but needs confirmations
+  const confirmations = Math.min(
+    checkCount - 2,
+    REQUIRED_CONFIRMATIONS[cryptocurrency]
+  );
+  const requiredConfs = REQUIRED_CONFIRMATIONS[cryptocurrency];
+  const isComplete = confirmations >= requiredConfs;
+
+  return {
+    found: true,
+    transaction: {
+      txHash: `0x${crypto.randomBytes(32).toString("hex")}`,
+      amount: expectedAmount,
+      cryptocurrency,
+      confirmations,
+      timestamp: new Date(),
+      from: "0x1234567890abcdef",
+      to: walletAddress,
+      status: isComplete ? "confirmed" : "pending",
+    },
+    expectedAmount,
+    receivedAmount: expectedAmount,
+    isComplete,
+    confirmations,
+    needsMoreConfirmations: Math.max(0, requiredConfs - confirmations),
+  };
 }
 
 /**
@@ -162,6 +221,12 @@ export async function checkPaymentStatus(
   console.log(`Cryptocurrency: ${cryptocurrency}`);
   console.log(`Wallet: ${walletAddress}`);
   console.log(`Expected: ${expectedAmount} ${cryptocurrency}`);
+
+  // Use demo mode if enabled (for testing without blockchain APIs)
+  if (DEMO_MODE) {
+    console.log(`[DEMO MODE] Simulating blockchain check...`);
+    return simulatePayment(walletAddress, expectedAmount, cryptocurrency);
+  }
 
   if (cryptocurrency === "BTC") {
     return await checkBitcoinPayment(walletAddress, expectedAmount, createdAt);

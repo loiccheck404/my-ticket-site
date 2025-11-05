@@ -10,11 +10,11 @@ export interface WalletConfig {
 
 export const WALLET_ADDRESSES: Record<string, WalletConfig> = {
   BTC: {
-    address: "tb1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh", // Bitcoin testnet address (example)
+    address: "tb1q9pvjqz5u5sdgpatg3wn0ce438u5cyv85lly0pc", // Bitcoin testnet address (valid)
     network: "testnet",
   },
   ETH: {
-    address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb", // Ethereum testnet address (example - Sepolia)
+    address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb", // Ethereum testnet address (Sepolia)
     network: "testnet",
   },
   USDT: {
@@ -25,6 +25,10 @@ export const WALLET_ADDRESSES: Record<string, WalletConfig> = {
 
 // Payment timeout duration (30 minutes)
 export const PAYMENT_TIMEOUT_MINUTES = 30;
+
+// Demo mode: Set to true to simulate payments without hitting real blockchain APIs
+// Useful for testing when APIs are blocked or for school demonstrations
+export const DEMO_MODE = true;
 
 // Minimum confirmations required before marking payment as complete
 export const REQUIRED_CONFIRMATIONS: Record<string, number> = {
