@@ -74,9 +74,9 @@ export default function Checkout() {
       const data = await response.json();
 
       if (data.success) {
-        alert(`Booking successful! Order ID: ${data.data.orderId}`);
+        // Redirect to payment page!
+        router.push(`/payment/${data.data.orderId}`);
         localStorage.removeItem("pendingCheckout"); // Clear pending checkout
-        router.push("/");
       } else {
         alert(`Booking failed: ${data.message}`);
       }
@@ -182,10 +182,6 @@ export default function Checkout() {
         >
           {loading ? "Processing..." : "Confirm Booking"}
         </button>
-
-        <p className="text-gray-500 text-sm text-center mt-4">
-          Payment processing will be added in Phase 7
-        </p>
       </div>
     </div>
   );
