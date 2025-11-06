@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface Match {
   id: string;
@@ -17,6 +18,7 @@ export default function Home() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const { user, logout, isAuthenticated } = useAuth();
+  const router = useRouter();
 
   // Fetch matches from backend
   useEffect(() => {
@@ -47,6 +49,14 @@ export default function Home() {
                 <span className="text-gray-300">
                   Welcome, {user?.firstName}!
                 </span>
+
+                <button
+                  onClick={() => router.push("/dashboard")}
+                  className="px-6 py-2 bg-[#FFD700] text-black font-bold rounded hover:bg-yellow-500 transition cursor-pointer"
+                >
+                  My Dashboard
+                </button>
+
                 <button
                   onClick={logout}
                   className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition cursor-pointer"
