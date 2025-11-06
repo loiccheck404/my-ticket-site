@@ -52,7 +52,7 @@ export default function Home() {
 
                 <button
                   onClick={() => router.push("/dashboard")}
-                  className="px-6 py-2 bg-[#FFD700] text-black font-bold rounded hover:bg-yellow-500 transition cursor-pointer"
+                  className="bg-yellow-500 text-black px-4 py-2 rounded-lg hover:bg-yellow-400 transition cursor-pointer"
                 >
                   My Dashboard
                 </button>

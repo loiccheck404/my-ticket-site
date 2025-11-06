@@ -123,12 +123,24 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="bg-gradient-to-r from-black via-gray-900 to-black border-b border-[#FFD700] py-6">
         <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-4xl font-bold text-[#FFD700]">My Dashboard</h1>
-          {user && (
-            <p className="text-gray-400 mt-2">
-              Welcome back, {user.firstName} {user.lastName}
-            </p>
-          )}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-[#FFD700]">
+                My Dashboard
+              </h1>
+              {user && (
+                <p className="text-gray-400 mt-2">
+                  Welcome back, {user.firstName} {user.lastName}
+                </p>
+              )}
+            </div>
+            <button
+              onClick={() => router.push("/")}
+              className="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition flex items-center gap-2"
+            >
+              ← Back to Home
+            </button>
+          </div>
         </div>
       </div>
 
