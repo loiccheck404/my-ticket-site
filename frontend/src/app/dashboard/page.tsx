@@ -264,9 +264,108 @@ export default function DashboardPage() {
           {activeTab === "orders" && (
             <div>
               <h2 className="text-2xl font-bold text-[#FFD700] mb-6">
-                Order History
+                Order History ({orders.length})
               </h2>
-              <p className="text-gray-400">Coming soon...</p>
+
+              {orders.length === 0 ? (
+                <div className="text-center py-16">
+                  <p className="text-gray-400 text-xl">No orders yet</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {orders.map((order) => (
+                    <div
+                      key={order.orderId}
+                      className="bg-gradient-to-r from-gray-900 to-black border border-[#FFD700] rounded-lg p-6"
+                    >
+                      {/* Order Header */}
+                      <div className="flex justify-between items-start border-b border-gray-700 pb-4">
+                        <div>
+                          <h3 className="text-xl font-bold text-[#FFD700]">
+                            Order #{order.orderId.slice(0, 8)}...
+                          </h3>
+                          <p className="text-gray-400 mt-1">
+                            Placed on {formatDate(order.createdAt)}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span
+                            className={`${getStatusColor(
+                              order.status
+                            )} text-white px-4 py-2 rounded font-bold`}
+                          >
+                            {order.status}
+                          </span>
+                          <p className="text-white text-xl font-bold mt-2">
+                            ${order.totalAmount}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Order Items */}
+                      <div className="mt-4 space-y-3">
+                        {order.tickets.map((ticket, idx) => (
+                          <div
+                            key={idx}
+                            className="flex items-center gap-4 bg-black/50 p-3 rounded"
+                          >
+                            <img
+                              src={ticket.match.imageUrl}
+                              alt={ticket.match.title}
+                              className="w-16 h-16 object-cover rounded"
+                            />
+                            <div className="flex-1">
+                              <p className="text-white font-semibold">
+                                {ticket.match.title}
+                              </p>
+                              <p className="text-gray-400 text-sm">
+                                {ticket.ticketType} - {ticket.seat?.section}{" "}
+                                Section
+                              </p>
+                            </div>
+                            <p className="text-[#FFD700] font-bold">
+                              ${ticket.price}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Payment Info */}
+                      <div className="mt-4 pt-4 border-t border-gray-700">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-400">Payment Method:</span>
+                          <span className="text-white font-semibold">
+                            {order.paymentMethod}
+                            {order.transaction &&
+                              ` (${order.transaction.cryptocurrency})`}
+                          </span>
+                        </div>
+                        {order.transaction && (
+                          <>
+                            <div className="flex justify-between text-sm mt-2">
+                              <span className="text-gray-400">
+                                Crypto Amount:
+                              </span>
+                              <span className="text-white">
+                                {order.transaction.cryptoAmount}{" "}
+                                {order.transaction.cryptocurrency}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-sm mt-2">
+                              <span className="text-gray-400">
+                                Confirmations:
+                              </span>
+                              <span className="text-white">
+                                {order.transaction.confirmations}
+                              </span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -275,7 +374,103 @@ export default function DashboardPage() {
               <h2 className="text-2xl font-bold text-[#FFD700] mb-6">
                 Profile
               </h2>
-              <p className="text-gray-400">Coming soon...</p>
+
+              {user && (
+                <div className="max-w-2xl">
+                  {/* Profile Info Card */}
+                  <div className="bg-gradient-to-r from-gray-900 to-black border border-[#FFD700] rounded-lg p-8">
+                    <div className="space-y-6">
+                      {/* Name */}
+                      <div>
+                        <label className="text-gray-400 text-sm">
+                          Full Name
+                        </label>
+                        <p className="text-white text-xl font-semibold mt-1">
+                          {user.firstName} {user.lastName}
+                        </p>
+                      </div>
+
+                      {/* Email */}
+                      <div>
+                        <label className="text-gray-400 text-sm">Email</label>
+                        <p className="text-white text-xl mt-1">{user.email}</p>
+                      </div>
+
+                      {/* User ID */}
+                      <div>
+                        <label className="text-gray-400 text-sm">User ID</label>
+                        <p className="text-gray-500 text-sm mt-1 font-mono">
+                          {user.id}
+                        </p>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-700">
+                        <div className="bg-black/50 p-4 rounded text-center">
+                          <p className="text-[#FFD700] text-3xl font-bold">
+                            {orders.length}
+                          </p>
+                          <p className="text-gray-400 text-sm mt-1">
+                            Total Orders
+                          </p>
+                        </div>
+                        <div className="bg-black/50 p-4 rounded text-center">
+                          <p className="text-[#FFD700] text-3xl font-bold">
+                            {orders.reduce(
+                              (sum, order) => sum + order.tickets.length,
+                              0
+                            )}
+                          </p>
+                          <p className="text-gray-400 text-sm mt-1">
+                            Total Tickets
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Logout Button */}
+                      <div className="pt-4 border-t border-gray-700">
+                        <button
+                          onClick={() => {
+                            localStorage.removeItem("user");
+                            localStorage.removeItem("token");
+                            router.push("/login");
+                          }}
+                          className="w-full bg-red-600 text-white font-bold py-3 rounded hover:bg-red-700 transition"
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Account Info */}
+                  <div className="mt-6 bg-gradient-to-r from-gray-900 to-black border border-gray-700 rounded-lg p-6">
+                    <h3 className="text-lg font-bold text-white mb-4">
+                      Account Information
+                    </h3>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Member Since</span>
+                        <span className="text-white">November 2025</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Account Status</span>
+                        <span className="text-green-500">Active</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Total Spent</span>
+                        <span className="text-[#FFD700] font-bold">
+                          $
+                          {orders.reduce(
+                            (sum, order) => sum + order.totalAmount,
+                            0
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
