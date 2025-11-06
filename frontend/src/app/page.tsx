@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import TicketPanel from "@/components/TicketPanel";
 
 interface Match {
   id: string;
@@ -19,6 +20,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const { user, logout, isAuthenticated } = useAuth();
   const router = useRouter();
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   // Fetch matches from backend
   useEffect(() => {
@@ -46,9 +48,12 @@ export default function Home() {
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <>
-                <span className="text-gray-300">
-                  Welcome, {user?.firstName}!
-                </span>
+                <button
+                  onClick={() => setIsPanelOpen(true)}
+                  className="text-yellow-500 hover:text-yellow-400 transition cursor-pointer font-semibold"
+                >
+                  Welcome, {user?.firstName}! 👋
+                </button>
 
                 <button
                   onClick={() => router.push("/dashboard")}
@@ -150,6 +155,15 @@ export default function Home() {
           <p>© 2025 Premium Tickets. Powered by blockchain technology.</p>
         </div>
       </div>
+
+      {/* Slide-Out Panel */}
+      {user && (
+        <TicketPanel
+          isOpen={isPanelOpen}
+          onClose={() => setIsPanelOpen(false)}
+          userId={user.id}
+        />
+      )}
     </div>
   );
 }
