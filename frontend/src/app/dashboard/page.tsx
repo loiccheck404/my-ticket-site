@@ -263,6 +263,19 @@ export default function DashboardPage() {
                                 </p>
                               </div>
                             )}
+
+                            {/* Download PDF Button */}
+                            <button
+                              onClick={() => {
+                                window.open(
+                                  `http://localhost:5000/api/tickets/download/${order.orderId}/${idx}`,
+                                  "_blank"
+                                );
+                              }}
+                              className="mt-4 w-full bg-[#FFD700] text-black px-4 py-2 rounded font-bold hover:bg-yellow-500 transition flex items-center justify-center gap-2"
+                            >
+                              📄 Download Ticket
+                            </button>
                           </div>
                         </div>
                       </div>

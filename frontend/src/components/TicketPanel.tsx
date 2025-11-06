@@ -168,6 +168,19 @@ export default function TicketPanel({
                     <p className="text-[#FFD700] font-bold mt-2">
                       {ticket.ticketType} - ${ticket.price}
                     </p>
+
+                    {/* Download Button */}
+                    <button
+                      onClick={() => {
+                        window.open(
+                          `http://localhost:5000/api/tickets/download/${order.orderId}/${idx}`,
+                          "_blank"
+                        );
+                      }}
+                      className="mt-3 w-full bg-[#FFD700] text-black px-3 py-2 rounded text-sm font-bold hover:bg-yellow-500 transition"
+                    >
+                      📄 Download
+                    </button>
                   </div>
                 ))
               )}
