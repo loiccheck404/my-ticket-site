@@ -9,6 +9,7 @@ import paymentRoutes from "./routes/paymentRoutes";
 import userOrdersRoutes from "./routes/userOrdersRoute";
 import ticketRoutes from "./routes/ticketRoutes";
 import adminRoutes from "./routes/adminRoutes";
+import emailRoutes from "./routes/emailRoutes";
 
 // Load environment variables
 dotenv.config();
@@ -59,6 +60,8 @@ app.use("/api/orders", userOrdersRoutes);
 app.use("/api/tickets", ticketRoutes);
 
 app.use("/api/admin", adminRoutes);
+
+app.use("/api/payment", emailRoutes);
 
 // 404 handler - for routes that don't exist
 app.use((req: Request, res: Response) => {
