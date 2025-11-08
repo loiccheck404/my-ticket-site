@@ -6,7 +6,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:Biyan4ever7!@127.0.0.1:5432/ticket_booking"
+  url = env("DATABASE_URL")
 }
 
 // User Model - People who buy tickets
