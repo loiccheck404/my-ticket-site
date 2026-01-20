@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts",
+    "dev": "dotenv -e /home/bboy/Desktop/Projects/my-ticket-site/backend/.env -- nodemon --exec ts-node src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "migrate": "dotenv -e .env -- prisma migrate deploy",
