@@ -5,8 +5,8 @@ import path from 'path';
 // Load environment variables from backend root
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
-// Explicitly set the DATABASE_URL if needed
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://bboy:password123@localhost:5432/my_ticket_db';
+// Explicitly set the DATABASE_URL with correct password
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://bboy:6676@127.0.0.1:5432/my_ticket_db';
 
 // Create Prisma Client with explicit datasource
 const prisma = new PrismaClient({
