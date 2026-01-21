@@ -253,34 +253,34 @@ export default function MatchDetails() {
               style={{ aspectRatio: "1.2/1" }}
             >
               {/* Football Field - Center */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[35%] h-[45%] bg-gradient-to-br from-green-600 via-green-500 to-green-600 rounded-2xl shadow-2xl border-4 border-white/20 z-10">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[28%] h-[38%] bg-gradient-to-br from-green-600 via-green-500 to-green-600 rounded-2xl shadow-2xl border-4 border-white/20 z-10 pointer-events-none">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="text-white text-sm md:text-xl font-bebas tracking-widest">
+                  <p className="text-white text-xs md:text-lg font-bebas tracking-widest">
                     ⚽ FIELD ⚽
                   </p>
                 </div>
                 {/* Center Circle */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-20 md:h-20 border-2 border-white/30 rounded-full"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 md:w-16 md:h-16 border-2 border-white/30 rounded-full"></div>
               </div>
 
               {/* Category 1 - Innermost Ring (Closest to field) */}
               {seatsByCategory[1] && (
-                <div className="absolute inset-0">
+                <div className="absolute inset-0 pointer-events-none">
                   {Object.entries(seatsByCategory[1])
                     .sort(([a], [b]) => a.localeCompare(b))
                     .map(([section, sectionSeats], index, array) => {
                       const totalSections = array.length;
                       const angle =
                         (index / totalSections) * 2 * Math.PI - Math.PI / 2;
-                      const radiusX = 25;
-                      const radiusY = 27;
+                      const radiusX = 28;
+                      const radiusY = 30;
                       const x = 50 + radiusX * Math.cos(angle);
                       const y = 50 + radiusY * Math.sin(angle);
 
                       return (
                         <div
                           key={`cat1-${section}`}
-                          className="absolute -translate-x-1/2 -translate-y-1/2"
+                          className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
                           style={{ left: `${x}%`, top: `${y}%` }}
                         >
                           <div className="text-center mb-1">
@@ -299,7 +299,7 @@ export default function MatchDetails() {
                                   key={seat.id}
                                   onClick={() => toggleSeat(seat)}
                                   disabled={seat.isBooked}
-                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border ${
+                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border pointer-events-auto ${
                                     seat.isBooked
                                       ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
                                       : isSeatSelected(seat.id)
@@ -320,22 +320,22 @@ export default function MatchDetails() {
 
               {/* Category 2 - Second Ring */}
               {seatsByCategory[2] && (
-                <div className="absolute inset-0">
+                <div className="absolute inset-0 pointer-events-none">
                   {Object.entries(seatsByCategory[2])
                     .sort(([a], [b]) => a.localeCompare(b))
                     .map(([section, sectionSeats], index, array) => {
                       const totalSections = array.length;
                       const angle =
                         (index / totalSections) * 2 * Math.PI - Math.PI / 2;
-                      const radiusX = 33;
-                      const radiusY = 35;
+                      const radiusX = 36;
+                      const radiusY = 38;
                       const x = 50 + radiusX * Math.cos(angle);
                       const y = 50 + radiusY * Math.sin(angle);
 
                       return (
                         <div
                           key={`cat2-${section}`}
-                          className="absolute -translate-x-1/2 -translate-y-1/2"
+                          className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
                           style={{ left: `${x}%`, top: `${y}%` }}
                         >
                           <div className="text-center mb-1">
@@ -354,7 +354,7 @@ export default function MatchDetails() {
                                   key={seat.id}
                                   onClick={() => toggleSeat(seat)}
                                   disabled={seat.isBooked}
-                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border ${
+                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border pointer-events-auto ${
                                     seat.isBooked
                                       ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
                                       : isSeatSelected(seat.id)
@@ -375,22 +375,22 @@ export default function MatchDetails() {
 
               {/* Category 3 - Third Ring */}
               {seatsByCategory[3] && (
-                <div className="absolute inset-0">
+                <div className="absolute inset-0 pointer-events-none">
                   {Object.entries(seatsByCategory[3])
                     .sort(([a], [b]) => a.localeCompare(b))
                     .map(([section, sectionSeats], index, array) => {
                       const totalSections = array.length;
                       const angle =
                         (index / totalSections) * 2 * Math.PI - Math.PI / 2;
-                      const radiusX = 41;
-                      const radiusY = 43;
+                      const radiusX = 43;
+                      const radiusY = 45;
                       const x = 50 + radiusX * Math.cos(angle);
                       const y = 50 + radiusY * Math.sin(angle);
 
                       return (
                         <div
                           key={`cat3-${section}`}
-                          className="absolute -translate-x-1/2 -translate-y-1/2"
+                          className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
                           style={{ left: `${x}%`, top: `${y}%` }}
                         >
                           <div className="text-center mb-1">
@@ -409,7 +409,7 @@ export default function MatchDetails() {
                                   key={seat.id}
                                   onClick={() => toggleSeat(seat)}
                                   disabled={seat.isBooked}
-                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border ${
+                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border pointer-events-auto ${
                                     seat.isBooked
                                       ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
                                       : isSeatSelected(seat.id)
@@ -430,7 +430,7 @@ export default function MatchDetails() {
 
               {/* Category 4 - Outermost Ring (Furthest from field) */}
               {seatsByCategory[4] && (
-                <div className="absolute inset-0">
+                <div className="absolute inset-0 pointer-events-none">
                   {Object.entries(seatsByCategory[4])
                     .sort(([a], [b]) => a.localeCompare(b))
                     .map(([section, sectionSeats], index, array) => {
@@ -445,7 +445,7 @@ export default function MatchDetails() {
                       return (
                         <div
                           key={`cat4-${section}`}
-                          className="absolute -translate-x-1/2 -translate-y-1/2"
+                          className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
                           style={{ left: `${x}%`, top: `${y}%` }}
                         >
                           <div className="text-center mb-1">
@@ -464,7 +464,7 @@ export default function MatchDetails() {
                                   key={seat.id}
                                   onClick={() => toggleSeat(seat)}
                                   disabled={seat.isBooked}
-                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border ${
+                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border pointer-events-auto ${
                                     seat.isBooked
                                       ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
                                       : isSeatSelected(seat.id)
