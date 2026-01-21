@@ -8,9 +8,9 @@ router.get("/:matchId/tickets", async (req: Request, res: Response) => {
   try {
     const { matchId } = req.params;
 
-    // Get all ticket types for this match
     const tickets = await prisma.ticket.findMany({
       where: { matchId },
+      orderBy: { category: 'asc' }
     });
 
     if (tickets.length === 0) {
@@ -37,25 +37,39 @@ router.get("/:matchId/tickets", async (req: Request, res: Response) => {
 router.get("/:matchId/seats", async (req: Request, res: Response) => {
   try {
     const { matchId } = req.params;
-    const { ticketType } = req.query; // Optional filter by VIP or Regular
+    const { ticketType } = req.query;
 
     // Build query
     const whereClause: any = {
       matchId,
-      isBooked: false, // Only available seats
+      isBooked: false,
     };
 
-    // Filter by ticket type if provided
+    // Filter by ticket type
     if (ticketType) {
-      whereClause.section = ticketType;
+      const ticket = await prisma.ticket.findFirst({
+        where: {
+          matchId,
+          type: ticketType as string
+        }
+      });
+
+      if (ticket) {
+        whereClause.ticketId = ticket.id;
+      }
     }
 
-    // Get available seats
     const seats = await prisma.seat.findMany({
       where: whereClause,
-      orderBy: [{ row: "asc" }, { seatNumber: "asc" }],
+      orderBy: [{ section: "asc" }, { row: "asc" }, { seatNumber: "asc" }],
       include: {
-        ticket: true, // Include price info
+        ticket: {
+          select: {
+            price: true,
+            category: true,
+            color: true
+          }
+        },
       },
     });
 
@@ -78,7 +92,6 @@ router.post("/", async (req: Request, res: Response) => {
   try {
     const { userId, seatIds } = req.body;
 
-    // Validate input
     if (!userId || !seatIds || seatIds.length === 0) {
       return res.status(400).json({
         success: false,
@@ -86,7 +99,6 @@ router.post("/", async (req: Request, res: Response) => {
       });
     }
 
-    // Check if all seats are available
     const seats = await prisma.seat.findMany({
       where: {
         id: { in: seatIds },
@@ -96,7 +108,6 @@ router.post("/", async (req: Request, res: Response) => {
       },
     });
 
-    // Check if any seat is already booked
     const bookedSeat = seats.find((seat) => seat.isBooked);
     if (bookedSeat) {
       return res.status(400).json({
@@ -105,10 +116,8 @@ router.post("/", async (req: Request, res: Response) => {
       });
     }
 
-    // Calculate total amount
     const totalAmount = seats.reduce((sum, seat) => sum + seat.ticket.price, 0);
 
-    // Create order
     const order = await prisma.order.create({
       data: {
         userId,
@@ -118,9 +127,7 @@ router.post("/", async (req: Request, res: Response) => {
       },
     });
 
-    // Create order items and mark seats as booked
     for (const seat of seats) {
-      // Create order item
       const orderItem = await prisma.orderItem.create({
         data: {
           orderId: order.id,
@@ -130,7 +137,6 @@ router.post("/", async (req: Request, res: Response) => {
         },
       });
 
-      // Mark seat as booked and link to order item
       await prisma.seat.update({
         where: { id: seat.id },
         data: {
@@ -139,7 +145,6 @@ router.post("/", async (req: Request, res: Response) => {
         },
       });
 
-      // Update ticket available count
       await prisma.ticket.update({
         where: { id: seat.ticketId },
         data: {
