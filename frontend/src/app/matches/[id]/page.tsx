@@ -288,7 +288,7 @@ export default function MatchDetails() {
                               .sort((a, b) =>
                                 a.seatNumber.localeCompare(b.seatNumber),
                               )
-                              .slice(0, 4)
+                              .slice(0, 6)
                               .map((seat) => (
                                 <button
                                   key={seat.id}
@@ -338,7 +338,7 @@ export default function MatchDetails() {
                               .sort((a, b) =>
                                 a.seatNumber.localeCompare(b.seatNumber),
                               )
-                              .slice(0, 4)
+                              .slice(0, 6)
                               .map((seat) => (
                                 <button
                                   key={seat.id}
@@ -388,7 +388,7 @@ export default function MatchDetails() {
                               .sort((a, b) =>
                                 a.seatNumber.localeCompare(b.seatNumber),
                               )
-                              .slice(0, 4)
+                              .slice(0, 6)
                               .map((seat) => (
                                 <button
                                   key={seat.id}
@@ -438,7 +438,7 @@ export default function MatchDetails() {
                               .sort((a, b) =>
                                 a.seatNumber.localeCompare(b.seatNumber),
                               )
-                              .slice(0, 4)
+                              .slice(0, 6)
                               .map((seat) => (
                                 <button
                                   key={seat.id}
