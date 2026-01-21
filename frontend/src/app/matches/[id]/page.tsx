@@ -283,11 +283,6 @@ export default function MatchDetails() {
                           className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
                           style={{ left: `${x}%`, top: `${y}%` }}
                         >
-                          <div className="text-center mb-1">
-                            <span className="text-purple-400 font-bold text-[8px] md:text-[10px] px-1 py-0.5 bg-purple-900/60 rounded-full border border-purple-500/30">
-                              {section}
-                            </span>
-                          </div>
                           <div className="grid grid-cols-2 gap-0.5">
                             {sectionSeats
                               .sort((a, b) =>
@@ -338,11 +333,6 @@ export default function MatchDetails() {
                           className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
                           style={{ left: `${x}%`, top: `${y}%` }}
                         >
-                          <div className="text-center mb-1">
-                            <span className="text-blue-400 font-bold text-[8px] md:text-[10px] px-1 py-0.5 bg-blue-900/60 rounded-full border border-blue-500/30">
-                              {section}
-                            </span>
-                          </div>
                           <div className="grid grid-cols-2 gap-0.5">
                             {sectionSeats
                               .sort((a, b) =>
@@ -393,11 +383,6 @@ export default function MatchDetails() {
                           className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
                           style={{ left: `${x}%`, top: `${y}%` }}
                         >
-                          <div className="text-center mb-1">
-                            <span className="text-teal-400 font-bold text-[8px] md:text-[10px] px-1 py-0.5 bg-teal-900/60 rounded-full border border-teal-500/30">
-                              {section}
-                            </span>
-                          </div>
                           <div className="grid grid-cols-2 gap-0.5">
                             {sectionSeats
                               .sort((a, b) =>
@@ -448,11 +433,6 @@ export default function MatchDetails() {
                           className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
                           style={{ left: `${x}%`, top: `${y}%` }}
                         >
-                          <div className="text-center mb-1">
-                            <span className="text-yellow-400 font-bold text-[8px] md:text-[10px] px-1 py-0.5 bg-yellow-900/60 rounded-full border border-yellow-500/30">
-                              {section}
-                            </span>
-                          </div>
                           <div className="grid grid-cols-2 gap-0.5">
                             {sectionSeats
                               .sort((a, b) =>
