@@ -40,7 +40,8 @@ export default function MatchDetails() {
 
   const [match, setMatch] = useState<Match | null>(null);
   const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [allSeats, setAllSeats] = useState<Seat[]>([]); // All seats from all categories
+  const [seats, setSeats] = useState<Seat[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedSeatsData, setSelectedSeatsData] = useState<Seat[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -70,31 +71,26 @@ export default function MatchDetails() {
       .catch((error) => console.error("Error fetching tickets:", error));
   }, [matchId]);
 
-  // Fetch ALL seats from ALL categories at once
+  // Fetch seats when category is selected
   useEffect(() => {
-    if (tickets.length > 0) {
-      // Fetch seats for all ticket types
-      const fetchPromises = tickets.map((ticket) =>
+    if (selectedCategory !== null) {
+      const selectedTicket = tickets.find(
+        (t) => t.category === selectedCategory,
+      );
+      if (selectedTicket) {
         fetch(
-          `http://localhost:5000/api/matches/${matchId}/seats?ticketType=${ticket.type}`,
+          `http://localhost:5000/api/matches/${matchId}/seats?ticketType=${selectedTicket.type}`,
         )
           .then((res) => res.json())
-          .then((data) => data.data),
-      );
-
-      Promise.all(fetchPromises)
-        .then((results) => {
-          // Combine all seats from all categories
-          const combinedSeats = results.flat();
-          setAllSeats(combinedSeats);
-        })
-        .catch((error) => console.error("Error fetching seats:", error));
+          .then((data) => {
+            setSeats(data.data);
+          })
+          .catch((error) => console.error("Error fetching seats:", error));
+      }
     }
-  }, [matchId, tickets]);
+  }, [matchId, selectedCategory, tickets]);
 
   const toggleSeat = (seat: Seat) => {
-    if (seat.isBooked) return;
-
     const isSelected = selectedSeatsData.some((s) => s.id === seat.id);
     if (isSelected) {
       setSelectedSeatsData(selectedSeatsData.filter((s) => s.id !== seat.id));
@@ -122,16 +118,24 @@ export default function MatchDetails() {
     return colors[category] || "bg-gray-500";
   };
 
-  // Group ALL seats by category AND section
-  const seatsByCategory = allSeats.reduce(
+  const getCategoryBgColor = (category: number) => {
+    const colors: Record<number, string> = {
+      1: "bg-purple-500/20 border-purple-500/50",
+      2: "bg-blue-500/20 border-blue-500/50",
+      3: "bg-teal-500/20 border-teal-500/50",
+      4: "bg-yellow-500/20 border-yellow-500/50",
+    };
+    return colors[category] || "bg-gray-500/20";
+  };
+
+  // Group seats by section for stadium view
+  const groupedSeats = seats.reduce(
     (acc, seat) => {
-      const category = seat.ticket.category;
-      if (!acc[category]) acc[category] = {};
-      if (!acc[category][seat.section]) acc[category][seat.section] = [];
-      acc[category][seat.section].push(seat);
+      if (!acc[seat.section]) acc[seat.section] = [];
+      acc[seat.section].push(seat);
       return acc;
     },
-    {} as Record<number, Record<string, Seat[]>>,
+    {} as Record<string, Seat[]>,
   );
 
   if (loading) {
@@ -179,302 +183,184 @@ export default function MatchDetails() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Category Legend */}
+        {/* Category Selection with Mini Stadium Indicator */}
         <div className="mb-8">
           <h2 className="text-3xl font-bebas text-white mb-6 tracking-wider">
-            🎫 TICKET CATEGORIES
+            🎫 SELECT TICKET CATEGORY
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {tickets.map((ticket) => (
-              <div
+              <button
                 key={ticket.id}
-                className="p-6 rounded-xl font-semibold bg-white/5 border-2 border-white/10"
+                onClick={() => setSelectedCategory(ticket.category)}
+                className={`p-6 rounded-xl font-semibold transition-all duration-300 border-2 ${
+                  selectedCategory === ticket.category
+                    ? getCategoryColor(ticket.category) +
+                      " text-white shadow-2xl scale-105"
+                    : "bg-white/5 border-white/10 text-white hover:bg-white/10"
+                }`}
               >
                 <div className="text-left">
                   <div className="flex items-center gap-2 mb-2">
                     <div
                       className={`w-4 h-4 rounded-full ${getCategoryColor(ticket.category)}`}
                     ></div>
-                    <p className="text-xl font-bebas tracking-wider text-white">
+                    <p className="text-xl font-bebas tracking-wider">
                       {ticket.type}
                     </p>
                   </div>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold">
                     ${ticket.price.toLocaleString()}
                   </p>
-                  <p className="text-sm opacity-80 mt-2 text-white/60">
+                  <p className="text-sm opacity-80 mt-2">
                     {ticket.availableCount} seats available
                   </p>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
 
-        {/* Full Stadium View with Concentric Rings */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bebas text-white mb-6 tracking-wider">
-            🏟️ STADIUM SEATING MAP
-          </h2>
-
-          {/* Legend */}
-          <div className="flex gap-6 mb-6 flex-wrap">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-white/10 border-2 border-white/30"></div>
-              <span className="text-white text-sm">Available</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-green-500 border-2 border-green-400"></div>
-              <span className="text-white text-sm">Selected</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-gray-600"></div>
-              <span className="text-white text-sm">Unavailable</span>
-            </div>
-          </div>
-
-          {/* Concentric Rings Stadium */}
-          <div className="relative bg-gradient-to-br from-black/80 to-gray-900/80 rounded-3xl p-4 md:p-8 border-2 border-white/10 overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-5">
-              <div
-                className="absolute inset-0"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(circle, white 1px, transparent 1px)",
-                  backgroundSize: "20px 20px",
-                }}
-              ></div>
-            </div>
-
-            {/* Stadium Container */}
-            <div
-              className="relative w-full max-w-6xl mx-auto"
-              style={{ aspectRatio: "1.2/1" }}
-            >
-              {/* Football Field - Center */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[28%] h-[38%] bg-gradient-to-br from-green-600 via-green-500 to-green-600 rounded-2xl shadow-2xl border-4 border-white/20 z-10 pointer-events-none">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="text-white text-xs md:text-lg font-bebas tracking-widest">
-                    ⚽ FIELD ⚽
-                  </p>
-                </div>
-                {/* Center Circle */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 md:w-16 md:h-16 border-2 border-white/30 rounded-full"></div>
+        {/* Mini Stadium Position Indicator */}
+        {selectedCategory !== null && (
+          <div className="mb-6 flex items-center justify-center gap-4">
+            <span className="text-white/60 text-sm">Viewing:</span>
+            <div className="relative w-32 h-32">
+              {/* Mini stadium rings */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                {/* Category 1 - Innermost */}
+                <div
+                  className={`absolute w-8 h-8 rounded-full border-2 ${
+                    selectedCategory === 1
+                      ? "bg-purple-500 border-purple-400 animate-pulse"
+                      : "bg-purple-500/20 border-purple-500/30"
+                  }`}
+                ></div>
+                {/* Category 2 */}
+                <div
+                  className={`absolute w-16 h-16 rounded-full border-2 ${
+                    selectedCategory === 2
+                      ? "bg-blue-500 border-blue-400 animate-pulse"
+                      : "bg-blue-500/20 border-blue-500/30"
+                  }`}
+                ></div>
+                {/* Category 3 */}
+                <div
+                  className={`absolute w-24 h-24 rounded-full border-2 ${
+                    selectedCategory === 3
+                      ? "bg-teal-500 border-teal-400 animate-pulse"
+                      : "bg-teal-500/20 border-teal-500/30"
+                  }`}
+                ></div>
+                {/* Category 4 - Outermost */}
+                <div
+                  className={`absolute w-32 h-32 rounded-full border-2 ${
+                    selectedCategory === 4
+                      ? "bg-yellow-500 border-yellow-400 animate-pulse"
+                      : "bg-yellow-500/20 border-yellow-500/30"
+                  }`}
+                ></div>
               </div>
-
-              {/* Category 1 - Innermost Ring (Closest to field) */}
-              {seatsByCategory[1] && (
-                <div className="absolute inset-0 pointer-events-none">
-                  {Object.entries(seatsByCategory[1])
-                    .sort(([a], [b]) => a.localeCompare(b))
-                    .map(([section, sectionSeats], index, array) => {
-                      const totalSections = array.length;
-                      const angle =
-                        (index / totalSections) * 2 * Math.PI - Math.PI / 2;
-                      const radiusX = 28;
-                      const radiusY = 30;
-                      const x = 50 + radiusX * Math.cos(angle);
-                      const y = 50 + radiusY * Math.sin(angle);
-
-                      return (
-                        <div
-                          key={`cat1-${section}`}
-                          className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
-                          style={{ left: `${x}%`, top: `${y}%` }}
-                        >
-                          <div className="grid grid-cols-2 gap-0.5">
-                            {sectionSeats
-                              .sort((a, b) =>
-                                a.seatNumber.localeCompare(b.seatNumber),
-                              )
-                              .slice(0, 6)
-                              .map((seat) => (
-                                <button
-                                  key={seat.id}
-                                  onClick={() => toggleSeat(seat)}
-                                  disabled={seat.isBooked}
-                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border pointer-events-auto ${
-                                    seat.isBooked
-                                      ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
-                                      : isSeatSelected(seat.id)
-                                        ? "bg-green-500 border-green-400 scale-110 shadow-lg"
-                                        : "bg-purple-500/30 border-purple-400/50 text-white hover:bg-purple-500/50 hover:scale-105"
-                                  }`}
-                                  title={`${seat.seatNumber} - $${seat.ticket.price}`}
-                                >
-                                  {seat.seatNumber.slice(-2)}
-                                </button>
-                              ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                </div>
-              )}
-
-              {/* Category 2 - Second Ring */}
-              {seatsByCategory[2] && (
-                <div className="absolute inset-0 pointer-events-none">
-                  {Object.entries(seatsByCategory[2])
-                    .sort(([a], [b]) => a.localeCompare(b))
-                    .map(([section, sectionSeats], index, array) => {
-                      const totalSections = array.length;
-                      const angle =
-                        (index / totalSections) * 2 * Math.PI - Math.PI / 2;
-                      const radiusX = 36;
-                      const radiusY = 38;
-                      const x = 50 + radiusX * Math.cos(angle);
-                      const y = 50 + radiusY * Math.sin(angle);
-
-                      return (
-                        <div
-                          key={`cat2-${section}`}
-                          className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
-                          style={{ left: `${x}%`, top: `${y}%` }}
-                        >
-                          <div className="grid grid-cols-2 gap-0.5">
-                            {sectionSeats
-                              .sort((a, b) =>
-                                a.seatNumber.localeCompare(b.seatNumber),
-                              )
-                              .slice(0, 6)
-                              .map((seat) => (
-                                <button
-                                  key={seat.id}
-                                  onClick={() => toggleSeat(seat)}
-                                  disabled={seat.isBooked}
-                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border pointer-events-auto ${
-                                    seat.isBooked
-                                      ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
-                                      : isSeatSelected(seat.id)
-                                        ? "bg-green-500 border-green-400 scale-110 shadow-lg"
-                                        : "bg-blue-500/30 border-blue-400/50 text-white hover:bg-blue-500/50 hover:scale-105"
-                                  }`}
-                                  title={`${seat.seatNumber} - $${seat.ticket.price}`}
-                                >
-                                  {seat.seatNumber.slice(-2)}
-                                </button>
-                              ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                </div>
-              )}
-
-              {/* Category 3 - Third Ring */}
-              {seatsByCategory[3] && (
-                <div className="absolute inset-0 pointer-events-none">
-                  {Object.entries(seatsByCategory[3])
-                    .sort(([a], [b]) => a.localeCompare(b))
-                    .map(([section, sectionSeats], index, array) => {
-                      const totalSections = array.length;
-                      const angle =
-                        (index / totalSections) * 2 * Math.PI - Math.PI / 2;
-                      const radiusX = 43;
-                      const radiusY = 45;
-                      const x = 50 + radiusX * Math.cos(angle);
-                      const y = 50 + radiusY * Math.sin(angle);
-
-                      return (
-                        <div
-                          key={`cat3-${section}`}
-                          className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
-                          style={{ left: `${x}%`, top: `${y}%` }}
-                        >
-                          <div className="grid grid-cols-2 gap-0.5">
-                            {sectionSeats
-                              .sort((a, b) =>
-                                a.seatNumber.localeCompare(b.seatNumber),
-                              )
-                              .slice(0, 6)
-                              .map((seat) => (
-                                <button
-                                  key={seat.id}
-                                  onClick={() => toggleSeat(seat)}
-                                  disabled={seat.isBooked}
-                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border pointer-events-auto ${
-                                    seat.isBooked
-                                      ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
-                                      : isSeatSelected(seat.id)
-                                        ? "bg-green-500 border-green-400 scale-110 shadow-lg"
-                                        : "bg-teal-500/30 border-teal-400/50 text-white hover:bg-teal-500/50 hover:scale-105"
-                                  }`}
-                                  title={`${seat.seatNumber} - $${seat.ticket.price}`}
-                                >
-                                  {seat.seatNumber.slice(-2)}
-                                </button>
-                              ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                </div>
-              )}
-
-              {/* Category 4 - Outermost Ring (Furthest from field) */}
-              {seatsByCategory[4] && (
-                <div className="absolute inset-0 pointer-events-none">
-                  {Object.entries(seatsByCategory[4])
-                    .sort(([a], [b]) => a.localeCompare(b))
-                    .map(([section, sectionSeats], index, array) => {
-                      const totalSections = array.length;
-                      const angle =
-                        (index / totalSections) * 2 * Math.PI - Math.PI / 2;
-                      const radiusX = 49;
-                      const radiusY = 48;
-                      const x = 50 + radiusX * Math.cos(angle);
-                      const y = 50 + radiusY * Math.sin(angle);
-
-                      return (
-                        <div
-                          key={`cat4-${section}`}
-                          className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
-                          style={{ left: `${x}%`, top: `${y}%` }}
-                        >
-                          <div className="grid grid-cols-2 gap-0.5">
-                            {sectionSeats
-                              .sort((a, b) =>
-                                a.seatNumber.localeCompare(b.seatNumber),
-                              )
-                              .slice(0, 6)
-                              .map((seat) => (
-                                <button
-                                  key={seat.id}
-                                  onClick={() => toggleSeat(seat)}
-                                  disabled={seat.isBooked}
-                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border pointer-events-auto ${
-                                    seat.isBooked
-                                      ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
-                                      : isSeatSelected(seat.id)
-                                        ? "bg-green-500 border-green-400 scale-110 shadow-lg"
-                                        : "bg-yellow-500/30 border-yellow-400/50 text-white hover:bg-yellow-500/50 hover:scale-105"
-                                  }`}
-                                  title={`${seat.seatNumber} - $${seat.ticket.price}`}
-                                >
-                                  {seat.seatNumber.slice(-2)}
-                                </button>
-                              ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                </div>
-              )}
             </div>
-
-            {/* Total Availability Counter */}
-            <div className="mt-8 text-center relative z-10">
-              <p className="text-white text-base md:text-lg">
-                <span className="font-bold text-[#FFD700] text-xl md:text-2xl">
-                  {allSeats.filter((s) => !s.isBooked).length}
-                </span>{" "}
-                <span className="text-white/80">total seats available</span>
+            <div className="text-left">
+              <p className="text-white font-bold">
+                Category {selectedCategory}
+              </p>
+              <p className="text-[#FFD700] text-sm">
+                {selectedCategory === 1 && "Closest to field"}
+                {selectedCategory === 2 && "Near the field"}
+                {selectedCategory === 3 && "Mid-distance"}
+                {selectedCategory === 4 && "Upper level"}
               </p>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* Stadium View */}
+        {selectedCategory !== null && (
+          <div className="mb-8">
+            <h2 className="text-3xl font-bebas text-white mb-6 tracking-wider">
+              🏟️ STADIUM SEATING MAP
+            </h2>
+
+            {/* Legend */}
+            <div className="flex gap-6 mb-6 flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded bg-white/10 border-2 border-white/30"></div>
+                <span className="text-white text-sm">Available</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className={`w-6 h-6 rounded ${getCategoryColor(selectedCategory)}`}
+                ></div>
+                <span className="text-white text-sm">Selected</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded bg-gray-600"></div>
+                <span className="text-white text-sm">Unavailable</span>
+              </div>
+            </div>
+
+            <div
+              className={`rounded-2xl p-8 border-2 ${getCategoryBgColor(selectedCategory)}`}
+            >
+              {/* Field */}
+              <div className="bg-gradient-to-r from-green-600 via-green-500 to-green-600 text-white text-center py-8 mb-8 rounded-xl relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('/field-lines.svg')] opacity-20"></div>
+                <p className="text-3xl font-bebas tracking-widest relative z-10">
+                  ⚽ FOOTBALL FIELD ⚽
+                </p>
+              </div>
+
+              {/* Seats Grid by Section */}
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+                {Object.entries(groupedSeats)
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([section, sectionSeats]) => (
+                    <div key={section} className="space-y-3">
+                      <h3 className="text-[#FFD700] font-bold text-center text-sm">
+                        {section}
+                      </h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        {sectionSeats
+                          .sort((a, b) =>
+                            a.seatNumber.localeCompare(b.seatNumber),
+                          )
+                          .map((seat) => (
+                            <button
+                              key={seat.id}
+                              onClick={() => toggleSeat(seat)}
+                              disabled={seat.isBooked}
+                              className={`w-full aspect-square rounded text-xs font-bold transition-all duration-200 border-2 ${
+                                seat.isBooked
+                                  ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
+                                  : isSeatSelected(seat.id)
+                                    ? getCategoryColor(selectedCategory) +
+                                      " scale-110 shadow-lg"
+                                    : "bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-105"
+                              }`}
+                              title={`${seat.seatNumber} - $${seat.ticket.price}`}
+                            >
+                              {seat.seatNumber.split("-")[1] || seat.seatNumber}
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+
+              {/* Availability Counter */}
+              <div className="mt-8 text-center">
+                <p className="text-white text-lg">
+                  <span className="font-bold text-[#FFD700]">
+                    {seats.filter((s) => !s.isBooked).length}
+                  </span>{" "}
+                  seats available in this category
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Selected Seats Summary */}
         {selectedSeatsData.length > 0 && (
@@ -490,8 +376,7 @@ export default function MatchDetails() {
                   className="flex justify-between items-center text-white bg-white/5 p-3 rounded-lg"
                 >
                   <span className="font-semibold">
-                    Category {seat.ticket.category} - {seat.section} - Seat{" "}
-                    {seat.seatNumber}
+                    {seat.section} - Seat {seat.seatNumber}
                   </span>
                   <span className="text-[#FFD700] font-bold">
                     ${seat.ticket.price.toLocaleString()}
@@ -528,6 +413,15 @@ export default function MatchDetails() {
             >
               PROCEED TO CHECKOUT →
             </button>
+          </div>
+        )}
+
+        {/* Help Text */}
+        {selectedCategory === null && (
+          <div className="text-center py-12">
+            <p className="text-white/60 text-lg">
+              👆 Select a ticket category above to view available seats
+            </p>
           </div>
         )}
       </div>
