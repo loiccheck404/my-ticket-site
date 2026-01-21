@@ -221,7 +221,7 @@ export default function MatchDetails() {
           </div>
         </div>
 
-        {/* Stadium View */}
+        {/* Oval Stadium View */}
         {selectedCategory !== null && (
           <div className="mb-8">
             <h2 className="text-3xl font-bebas text-white mb-6 tracking-wider">
@@ -246,59 +246,116 @@ export default function MatchDetails() {
               </div>
             </div>
 
-            <div
-              className={`rounded-2xl p-8 border-2 ${getCategoryBgColor(selectedCategory)}`}
-            >
-              {/* Field */}
-              <div className="bg-gradient-to-r from-green-600 via-green-500 to-green-600 text-white text-center py-8 mb-8 rounded-xl relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/field-lines.svg')] opacity-20"></div>
-                <p className="text-3xl font-bebas tracking-widest relative z-10">
-                  ⚽ FOOTBALL FIELD ⚽
-                </p>
+            {/* Oval Stadium Container */}
+            <div className="relative bg-gradient-to-br from-black/80 to-gray-900/80 rounded-3xl p-4 md:p-8 border-2 border-white/10 overflow-hidden">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-5">
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(circle, white 1px, transparent 1px)",
+                    backgroundSize: "20px 20px",
+                  }}
+                ></div>
               </div>
 
-              {/* Seats Grid by Section */}
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-                {Object.entries(groupedSeats)
-                  .sort(([a], [b]) => a.localeCompare(b))
-                  .map(([section, sectionSeats]) => (
-                    <div key={section} className="space-y-3">
-                      <h3 className="text-[#FFD700] font-bold text-center text-sm">
-                        {section}
-                      </h3>
-                      <div className="grid grid-cols-2 gap-2">
-                        {sectionSeats
-                          .sort((a, b) =>
-                            a.seatNumber.localeCompare(b.seatNumber),
-                          )
-                          .map((seat) => (
-                            <button
-                              key={seat.id}
-                              onClick={() => toggleSeat(seat)}
-                              disabled={seat.isBooked}
-                              className={`w-full aspect-square rounded text-xs font-bold transition-all duration-200 border-2 ${
-                                isSeatSelected(seat.id)
-                                  ? getCategoryColor(selectedCategory) +
-                                    " scale-110 shadow-lg"
-                                  : "bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-105"
-                              }`}
-                              title={`${seat.seatNumber} - $${seat.ticket.price}`}
-                            >
-                              {seat.seatNumber.split("-")[1] || seat.seatNumber}
-                            </button>
-                          ))}
-                      </div>
-                    </div>
-                  ))}
+              {/* Stadium Oval - Using CSS to create oval shape */}
+              <div
+                className="relative w-full max-w-5xl mx-auto"
+                style={{ aspectRatio: "1.4/1" }}
+              >
+                {/* Football Field - Center */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50%] h-[60%] bg-gradient-to-br from-green-600 via-green-500 to-green-600 rounded-2xl shadow-2xl border-4 border-white/20">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <p className="text-white text-lg md:text-2xl font-bebas tracking-widest">
+                      ⚽ FIELD ⚽
+                    </p>
+                  </div>
+                  {/* Center Circle */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 border-2 border-white/30 rounded-full"></div>
+                </div>
+
+                {/* Seats in Oval Pattern - Arrange sections in a circle */}
+                <div className="absolute inset-0">
+                  {Object.entries(groupedSeats)
+                    .sort(([a], [b]) => a.localeCompare(b))
+                    .map(([section, sectionSeats], index, array) => {
+                      // Calculate position in oval
+                      const totalSections = array.length;
+                      const angle =
+                        (index / totalSections) * 2 * Math.PI - Math.PI / 2;
+                      const radiusX = 45; // horizontal radius %
+                      const radiusY = 42; // vertical radius %
+                      const x = 50 + radiusX * Math.cos(angle);
+                      const y = 50 + radiusY * Math.sin(angle);
+
+                      return (
+                        <div
+                          key={section}
+                          className="absolute -translate-x-1/2 -translate-y-1/2"
+                          style={{
+                            left: `${x}%`,
+                            top: `${y}%`,
+                          }}
+                        >
+                          {/* Section Label */}
+                          <div className="text-center mb-2">
+                            <span className="text-[#FFD700] font-bold text-xs md:text-sm px-2 py-1 bg-black/60 rounded-full border border-[#FFD700]/30">
+                              {section}
+                            </span>
+                          </div>
+
+                          {/* Seats in this section */}
+                          <div className="grid grid-cols-2 gap-1 md:gap-2">
+                            {sectionSeats
+                              .sort((a, b) =>
+                                a.seatNumber.localeCompare(b.seatNumber),
+                              )
+                              .slice(0, 6) // Show 6 seats per section for cleaner oval look
+                              .map((seat) => (
+                                <button
+                                  key={seat.id}
+                                  onClick={() => toggleSeat(seat)}
+                                  disabled={seat.isBooked}
+                                  className={`w-8 h-8 md:w-10 md:h-10 rounded text-[10px] md:text-xs font-bold transition-all duration-200 border-2 ${
+                                    seat.isBooked
+                                      ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
+                                      : isSeatSelected(seat.id)
+                                        ? getCategoryColor(selectedCategory) +
+                                          " scale-110 shadow-lg"
+                                        : "bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-105"
+                                  }`}
+                                  title={`${seat.seatNumber} - $${seat.ticket.price}`}
+                                >
+                                  {seat.seatNumber.split("-")[1] ||
+                                    seat.seatNumber.slice(-2)}
+                                </button>
+                              ))}
+                          </div>
+
+                          {/* Availability indicator for this section */}
+                          <div className="text-center mt-1">
+                            <span className="text-[10px] text-white/60">
+                              {sectionSeats.filter((s) => !s.isBooked).length}{" "}
+                              left
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
               </div>
 
               {/* Availability Counter */}
-              <div className="mt-8 text-center">
-                <p className="text-white text-lg">
-                  <span className="font-bold text-[#FFD700]">
+              <div className="mt-8 text-center relative z-10">
+                <p className="text-white text-base md:text-lg">
+                  <span className="font-bold text-[#FFD700] text-xl md:text-2xl">
                     {seats.filter((s) => !s.isBooked).length}
                   </span>{" "}
-                  seats available in this category
+                  <span className="text-white/80">
+                    seats available in this category
+                  </span>
                 </p>
               </div>
             </div>
