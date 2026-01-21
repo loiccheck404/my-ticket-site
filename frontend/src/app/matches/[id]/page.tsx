@@ -272,8 +272,8 @@ export default function MatchDetails() {
                       const totalSections = array.length;
                       const angle =
                         (index / totalSections) * 2 * Math.PI - Math.PI / 2;
-                      const radiusX = 28;
-                      const radiusY = 30;
+                      const radiusX = 25;
+                      const radiusY = 27;
                       const x = 50 + radiusX * Math.cos(angle);
                       const y = 50 + radiusY * Math.sin(angle);
 
@@ -284,22 +284,22 @@ export default function MatchDetails() {
                           style={{ left: `${x}%`, top: `${y}%` }}
                         >
                           <div className="text-center mb-1">
-                            <span className="text-purple-400 font-bold text-[10px] md:text-xs px-2 py-1 bg-purple-900/60 rounded-full border border-purple-500/30">
+                            <span className="text-purple-400 font-bold text-[8px] md:text-[10px] px-1 py-0.5 bg-purple-900/60 rounded-full border border-purple-500/30">
                               {section}
                             </span>
                           </div>
-                          <div className="grid grid-cols-2 gap-1">
+                          <div className="grid grid-cols-2 gap-0.5">
                             {sectionSeats
                               .sort((a, b) =>
                                 a.seatNumber.localeCompare(b.seatNumber),
                               )
-                              .slice(0, 6)
+                              .slice(0, 4)
                               .map((seat) => (
                                 <button
                                   key={seat.id}
                                   onClick={() => toggleSeat(seat)}
                                   disabled={seat.isBooked}
-                                  className={`w-6 h-6 md:w-8 md:h-8 rounded text-[8px] md:text-[10px] font-bold transition-all duration-200 border ${
+                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border ${
                                     seat.isBooked
                                       ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
                                       : isSeatSelected(seat.id)
@@ -327,8 +327,8 @@ export default function MatchDetails() {
                       const totalSections = array.length;
                       const angle =
                         (index / totalSections) * 2 * Math.PI - Math.PI / 2;
-                      const radiusX = 35;
-                      const radiusY = 37;
+                      const radiusX = 33;
+                      const radiusY = 35;
                       const x = 50 + radiusX * Math.cos(angle);
                       const y = 50 + radiusY * Math.sin(angle);
 
@@ -339,22 +339,22 @@ export default function MatchDetails() {
                           style={{ left: `${x}%`, top: `${y}%` }}
                         >
                           <div className="text-center mb-1">
-                            <span className="text-blue-400 font-bold text-[10px] md:text-xs px-2 py-1 bg-blue-900/60 rounded-full border border-blue-500/30">
+                            <span className="text-blue-400 font-bold text-[8px] md:text-[10px] px-1 py-0.5 bg-blue-900/60 rounded-full border border-blue-500/30">
                               {section}
                             </span>
                           </div>
-                          <div className="grid grid-cols-2 gap-1">
+                          <div className="grid grid-cols-2 gap-0.5">
                             {sectionSeats
                               .sort((a, b) =>
                                 a.seatNumber.localeCompare(b.seatNumber),
                               )
-                              .slice(0, 6)
+                              .slice(0, 4)
                               .map((seat) => (
                                 <button
                                   key={seat.id}
                                   onClick={() => toggleSeat(seat)}
                                   disabled={seat.isBooked}
-                                  className={`w-6 h-6 md:w-8 md:h-8 rounded text-[8px] md:text-[10px] font-bold transition-all duration-200 border ${
+                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border ${
                                     seat.isBooked
                                       ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
                                       : isSeatSelected(seat.id)
@@ -382,8 +382,8 @@ export default function MatchDetails() {
                       const totalSections = array.length;
                       const angle =
                         (index / totalSections) * 2 * Math.PI - Math.PI / 2;
-                      const radiusX = 42;
-                      const radiusY = 44;
+                      const radiusX = 41;
+                      const radiusY = 43;
                       const x = 50 + radiusX * Math.cos(angle);
                       const y = 50 + radiusY * Math.sin(angle);
 
@@ -394,22 +394,22 @@ export default function MatchDetails() {
                           style={{ left: `${x}%`, top: `${y}%` }}
                         >
                           <div className="text-center mb-1">
-                            <span className="text-teal-400 font-bold text-[10px] md:text-xs px-2 py-1 bg-teal-900/60 rounded-full border border-teal-500/30">
+                            <span className="text-teal-400 font-bold text-[8px] md:text-[10px] px-1 py-0.5 bg-teal-900/60 rounded-full border border-teal-500/30">
                               {section}
                             </span>
                           </div>
-                          <div className="grid grid-cols-2 gap-1">
+                          <div className="grid grid-cols-2 gap-0.5">
                             {sectionSeats
                               .sort((a, b) =>
                                 a.seatNumber.localeCompare(b.seatNumber),
                               )
-                              .slice(0, 6)
+                              .slice(0, 4)
                               .map((seat) => (
                                 <button
                                   key={seat.id}
                                   onClick={() => toggleSeat(seat)}
                                   disabled={seat.isBooked}
-                                  className={`w-6 h-6 md:w-8 md:h-8 rounded text-[8px] md:text-[10px] font-bold transition-all duration-200 border ${
+                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border ${
                                     seat.isBooked
                                       ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
                                       : isSeatSelected(seat.id)
@@ -449,22 +449,22 @@ export default function MatchDetails() {
                           style={{ left: `${x}%`, top: `${y}%` }}
                         >
                           <div className="text-center mb-1">
-                            <span className="text-yellow-400 font-bold text-[10px] md:text-xs px-2 py-1 bg-yellow-900/60 rounded-full border border-yellow-500/30">
+                            <span className="text-yellow-400 font-bold text-[8px] md:text-[10px] px-1 py-0.5 bg-yellow-900/60 rounded-full border border-yellow-500/30">
                               {section}
                             </span>
                           </div>
-                          <div className="grid grid-cols-2 gap-1">
+                          <div className="grid grid-cols-2 gap-0.5">
                             {sectionSeats
                               .sort((a, b) =>
                                 a.seatNumber.localeCompare(b.seatNumber),
                               )
-                              .slice(0, 6)
+                              .slice(0, 4)
                               .map((seat) => (
                                 <button
                                   key={seat.id}
                                   onClick={() => toggleSeat(seat)}
                                   disabled={seat.isBooked}
-                                  className={`w-6 h-6 md:w-8 md:h-8 rounded text-[8px] md:text-[10px] font-bold transition-all duration-200 border ${
+                                  className={`w-4 h-4 md:w-5 md:h-5 rounded text-[7px] md:text-[8px] font-bold transition-all duration-200 border ${
                                     seat.isBooked
                                       ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
                                       : isSeatSelected(seat.id)
