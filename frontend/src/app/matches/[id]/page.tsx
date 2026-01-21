@@ -223,43 +223,79 @@ export default function MatchDetails() {
 
         {/* Mini Stadium Position Indicator */}
         {selectedCategory !== null && (
-          <div className="mb-6 flex items-center justify-center gap-4">
+          <div className="mb-6 flex items-center justify-center gap-4 flex-wrap">
             <span className="text-white/60 text-sm">Viewing:</span>
-            <div className="relative w-32 h-32">
+            <div className="relative w-40 h-40">
               {/* Mini stadium rings */}
               <div className="absolute inset-0 flex items-center justify-center">
                 {/* Category 1 - Innermost */}
                 <div
-                  className={`absolute w-8 h-8 rounded-full border-2 ${
+                  className={`absolute w-12 h-12 rounded-full border-2 transition-all duration-300 ${
                     selectedCategory === 1
-                      ? "bg-purple-500 border-purple-400 animate-pulse"
-                      : "bg-purple-500/20 border-purple-500/30"
+                      ? "bg-purple-500/40 border-purple-400"
+                      : "bg-purple-500/10 border-purple-500/30"
                   }`}
                 ></div>
                 {/* Category 2 */}
                 <div
-                  className={`absolute w-16 h-16 rounded-full border-2 ${
+                  className={`absolute w-20 h-20 rounded-full border-2 transition-all duration-300 ${
                     selectedCategory === 2
-                      ? "bg-blue-500 border-blue-400 animate-pulse"
-                      : "bg-blue-500/20 border-blue-500/30"
+                      ? "bg-blue-500/40 border-blue-400"
+                      : "bg-blue-500/10 border-blue-500/30"
                   }`}
                 ></div>
                 {/* Category 3 */}
                 <div
-                  className={`absolute w-24 h-24 rounded-full border-2 ${
+                  className={`absolute w-28 h-28 rounded-full border-2 transition-all duration-300 ${
                     selectedCategory === 3
-                      ? "bg-teal-500 border-teal-400 animate-pulse"
-                      : "bg-teal-500/20 border-teal-500/30"
+                      ? "bg-teal-500/40 border-teal-400"
+                      : "bg-teal-500/10 border-teal-500/30"
                   }`}
                 ></div>
                 {/* Category 4 - Outermost */}
                 <div
-                  className={`absolute w-32 h-32 rounded-full border-2 ${
+                  className={`absolute w-36 h-36 rounded-full border-2 transition-all duration-300 ${
                     selectedCategory === 4
-                      ? "bg-yellow-500 border-yellow-400 animate-pulse"
-                      : "bg-yellow-500/20 border-yellow-500/30"
+                      ? "bg-yellow-500/40 border-yellow-400"
+                      : "bg-yellow-500/10 border-yellow-500/30"
                   }`}
                 ></div>
+
+                {/* Selected Seat Position Markers */}
+                {selectedSeatsData.map((seat) => {
+                  // Extract section number to determine position
+                  const sectionNum = parseInt(seat.section.replace(/\D/g, ""));
+                  const lastDigit = sectionNum % 10; // Gets 01-10
+
+                  // Calculate angle based on section (1-10 maps to 0-360 degrees)
+                  // Section 1 = top (270°), rotating clockwise
+                  const angle =
+                    ((lastDigit - 1) / 10) * 2 * Math.PI - Math.PI / 2;
+
+                  // Determine radius based on category (percentage of container)
+                  let radius = 0;
+                  if (seat.ticket.category === 1)
+                    radius = 15; // 15% - innermost purple ring
+                  else if (seat.ticket.category === 2)
+                    radius = 25; // 25% - blue ring
+                  else if (seat.ticket.category === 3)
+                    radius = 35; // 35% - teal ring
+                  else if (seat.ticket.category === 4) radius = 45; // 45% - yellow ring (outermost)
+
+                  const x = 50 + radius * Math.cos(angle);
+                  const y = 50 + radius * Math.sin(angle);
+
+                  return (
+                    <div
+                      key={seat.id}
+                      className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 animate-pulse z-50"
+                      style={{ left: `${x}%`, top: `${y}%` }}
+                    >
+                      <div className="w-full h-full bg-green-500 rounded-full shadow-lg border-2 border-white"></div>
+                      <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75"></div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <div className="text-left">
@@ -272,6 +308,13 @@ export default function MatchDetails() {
                 {selectedCategory === 3 && "Mid-distance"}
                 {selectedCategory === 4 && "Upper level"}
               </p>
+              {selectedSeatsData.length > 0 && (
+                <p className="text-green-400 text-xs mt-1 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>
+                  {selectedSeatsData.length} seat
+                  {selectedSeatsData.length > 1 ? "s" : ""} marked
+                </p>
+              )}
             </div>
           </div>
         )}
