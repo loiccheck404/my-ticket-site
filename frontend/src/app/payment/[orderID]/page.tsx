@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { API_URL } from "@/config/api";
 
 // Types
 type CryptoType = "BTC" | "ETH" | "USDT";
@@ -72,10 +73,10 @@ export default function PaymentPage() {
   const [orderId, setOrderId] = useState("");
   const [selectedCrypto, setSelectedCrypto] = useState<CryptoType | null>(null);
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(
-    null
+    null,
   );
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatusData | null>(
-    null
+    null,
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -108,7 +109,7 @@ export default function PaymentPage() {
 
       console.log("📤 Request:", requestBody);
 
-      const response = await fetch("http://localhost:5000/api/payment/create", {
+      const response = await fetch(`${API_URL}/api/payment/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
@@ -136,9 +137,7 @@ export default function PaymentPage() {
     if (!orderId) return;
 
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/payment/check/${orderId}`
-      );
+      const response = await fetch(`${API_URL}/api/payment/check/${orderId}`);
       const data = await response.json();
 
       if (data.success) {
@@ -173,7 +172,7 @@ export default function PaymentPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/payment/status/${orderId}`
+        `http://localhost:5000/api/payment/status/${orderId}`,
       );
       const data = await response.json();
 
@@ -364,7 +363,7 @@ export default function PaymentPage() {
                     <button
                       onClick={() =>
                         navigator.clipboard.writeText(
-                          paymentDetails.walletAddress
+                          paymentDetails.walletAddress,
                         )
                       }
                       className="text-yellow-500 text-sm mt-2 hover:underline"
@@ -401,7 +400,7 @@ export default function PaymentPage() {
                     <span className="text-gray-400">Status</span>
                     <span
                       className={`font-bold ${getStatusColor(
-                        paymentStatus.status
+                        paymentStatus.status,
                       )}`}
                     >
                       {paymentStatus.status}
