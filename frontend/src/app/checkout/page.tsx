@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Suspense } from "react";
 
 interface SeatData {
   id: string;
@@ -39,7 +40,7 @@ export default function Checkout() {
       // Store current checkout data to resume after login
       localStorage.setItem(
         "pendingCheckout",
-        JSON.stringify({ seats, matchTitle })
+        JSON.stringify({ seats, matchTitle }),
       );
       alert("Please login to complete your booking");
       router.push("/login");
