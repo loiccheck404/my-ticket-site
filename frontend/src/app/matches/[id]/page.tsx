@@ -183,7 +183,7 @@ export default function MatchDetails() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Category Selection with Mini Stadium Indicator */}
+        {/* Category Selection */}
         <div className="mb-8">
           <h2 className="text-3xl font-bebas text-white mb-6 tracking-wider">
             🎫 SELECT TICKET CATEGORY
@@ -209,11 +209,11 @@ export default function MatchDetails() {
                       {ticket.type}
                     </p>
                   </div>
-                  <p className="text-2xl font-bold">
+                  <p className="text-3xl font-bold mb-1">
                     ${ticket.price.toLocaleString()}
                   </p>
-                  <p className="text-sm opacity-80 mt-2">
-                    {ticket.availableCount} seats available
+                  <p className="text-sm opacity-80">
+                    {ticket.availableCount} seats left
                   </p>
                 </div>
               </button>
@@ -221,100 +221,110 @@ export default function MatchDetails() {
           </div>
         </div>
 
-        {/* Mini Stadium Position Indicator */}
+        {/* RESIZED & CENTERED Curved Stadium Indicator */}
         {selectedCategory !== null && (
-          <div className="mb-6 flex items-center justify-center gap-4 flex-wrap">
-            <span className="text-white/60 text-sm">Viewing:</span>
-            <div className="relative w-40 h-40">
-              {/* Mini stadium rings */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                {/* Category 1 - Innermost */}
-                <div
-                  className={`absolute w-12 h-12 rounded-full border-2 transition-all duration-300 ${
-                    selectedCategory === 1
-                      ? "bg-purple-500/40 border-purple-400"
-                      : "bg-purple-500/10 border-purple-500/30"
-                  }`}
-                ></div>
-                {/* Category 2 */}
-                <div
-                  className={`absolute w-20 h-20 rounded-full border-2 transition-all duration-300 ${
-                    selectedCategory === 2
-                      ? "bg-blue-500/40 border-blue-400"
-                      : "bg-blue-500/10 border-blue-500/30"
-                  }`}
-                ></div>
-                {/* Category 3 */}
-                <div
-                  className={`absolute w-28 h-28 rounded-full border-2 transition-all duration-300 ${
-                    selectedCategory === 3
-                      ? "bg-teal-500/40 border-teal-400"
-                      : "bg-teal-500/10 border-teal-500/30"
-                  }`}
-                ></div>
-                {/* Category 4 - Outermost */}
-                <div
-                  className={`absolute w-36 h-36 rounded-full border-2 transition-all duration-300 ${
-                    selectedCategory === 4
-                      ? "bg-yellow-500/40 border-yellow-400"
-                      : "bg-yellow-500/10 border-yellow-500/30"
-                  }`}
-                ></div>
+          <div className="mb-8 bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
+            <div className="flex items-center justify-center gap-6">
+              <div className="relative w-48 h-48 shrink-0">
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                  {/* All 4 Concentric circles */}
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    fill="none"
+                    stroke="rgb(234, 179, 8)"
+                    strokeWidth="2"
+                    opacity="0.4"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="35"
+                    fill="none"
+                    stroke="rgb(20, 184, 166)"
+                    strokeWidth="2"
+                    opacity="0.4"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="25"
+                    fill="none"
+                    stroke="rgb(59, 130, 246)"
+                    strokeWidth="2"
+                    opacity="0.4"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="15"
+                    fill="none"
+                    stroke="rgb(168, 85, 247)"
+                    strokeWidth="2"
+                    opacity="0.4"
+                  />
+                </svg>
 
-                {/* Selected Seat Position Markers */}
-                {selectedSeatsData.map((seat) => {
-                  // Extract section number to determine position
-                  const sectionNum = parseInt(seat.section.replace(/\D/g, ""));
-                  const lastDigit = sectionNum % 10; // Gets 01-10
+                {/* Green dots ONLY for selected category seats */}
+                {selectedSeatsData
+                  .filter((seat) => seat.ticket.category === selectedCategory)
+                  .map((seat, index, filteredSeats) => {
+                    const totalSeats = filteredSeats.length;
+                    const angle =
+                      (index / totalSeats) * 2 * Math.PI - Math.PI / 2;
 
-                  // Calculate angle based on section (1-10 maps to 0-360 degrees)
-                  // Section 1 = top (270°), rotating clockwise
-                  const angle =
-                    ((lastDigit - 1) / 10) * 2 * Math.PI - Math.PI / 2;
+                    let radius = 0;
+                    if (selectedCategory === 1) radius = 15;
+                    else if (selectedCategory === 2) radius = 25;
+                    else if (selectedCategory === 3) radius = 35;
+                    else if (selectedCategory === 4) radius = 45;
 
-                  // Determine radius based on category (percentage of container)
-                  let radius = 0;
-                  if (seat.ticket.category === 1)
-                    radius = 15; // 15% - innermost purple ring
-                  else if (seat.ticket.category === 2)
-                    radius = 25; // 25% - blue ring
-                  else if (seat.ticket.category === 3)
-                    radius = 35; // 35% - teal ring
-                  else if (seat.ticket.category === 4) radius = 45; // 45% - yellow ring (outermost)
+                    const x = 50 + radius * Math.cos(angle);
+                    const y = 50 + radius * Math.sin(angle);
 
-                  const x = 50 + radius * Math.cos(angle);
-                  const y = 50 + radius * Math.sin(angle);
-
-                  return (
-                    <div
-                      key={seat.id}
-                      className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 animate-pulse z-50"
-                      style={{ left: `${x}%`, top: `${y}%` }}
-                    >
-                      <div className="w-full h-full bg-green-500 rounded-full shadow-lg border-2 border-white"></div>
-                      <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75"></div>
-                    </div>
-                  );
-                })}
+                    return (
+                      <div
+                        key={seat.id}
+                        className="absolute w-2.5 h-2.5 -translate-x-1/2 -translate-y-1/2 animate-pulse z-50"
+                        style={{ left: `${x}%`, top: `${y}%` }}
+                      >
+                        <div className="w-full h-full bg-green-500 rounded-full shadow-lg border border-white"></div>
+                        <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75"></div>
+                      </div>
+                    );
+                  })}
               </div>
-            </div>
-            <div className="text-left">
-              <p className="text-white font-bold">
-                Category {selectedCategory}
-              </p>
-              <p className="text-[#FFD700] text-sm">
-                {selectedCategory === 1 && "Closest to field"}
-                {selectedCategory === 2 && "Near the field"}
-                {selectedCategory === 3 && "Mid-distance"}
-                {selectedCategory === 4 && "Upper level"}
-              </p>
-              {selectedSeatsData.length > 0 && (
-                <p className="text-green-400 text-xs mt-1 flex items-center gap-1">
-                  <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>
-                  {selectedSeatsData.length} seat
-                  {selectedSeatsData.length > 1 ? "s" : ""} marked
+              <div className="text-left">
+                <p className="text-white font-bold text-lg">
+                  Category {selectedCategory}
                 </p>
-              )}
+                <p className="text-[#FFD700] text-sm">
+                  {selectedCategory === 1 && "Closest to field"}
+                  {selectedCategory === 2 && "Near the field"}
+                  {selectedCategory === 3 && "Mid-distance"}
+                  {selectedCategory === 4 && "Upper level"}
+                </p>
+                {selectedSeatsData.filter(
+                  (s) => s.ticket.category === selectedCategory,
+                ).length > 0 && (
+                  <p className="text-green-400 text-xs mt-2 flex items-center gap-1">
+                    <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>
+                    {
+                      selectedSeatsData.filter(
+                        (s) => s.ticket.category === selectedCategory,
+                      ).length
+                    }{" "}
+                    seat
+                    {selectedSeatsData.filter(
+                      (s) => s.ticket.category === selectedCategory,
+                    ).length > 1
+                      ? "s"
+                      : ""}{" "}
+                    marked
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -355,38 +365,43 @@ export default function MatchDetails() {
                 </p>
               </div>
 
-              {/* Seats Grid by Section */}
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+              {/* Single Section Display */}
+              <div className="max-w-4xl mx-auto">
                 {Object.entries(groupedSeats)
                   .sort(([a], [b]) => a.localeCompare(b))
                   .map(([section, sectionSeats]) => (
-                    <div key={section} className="space-y-3">
-                      <h3 className="text-[#FFD700] font-bold text-center text-sm">
-                        {section}
+                    <div key={section} className="space-y-4">
+                      <h3 className="text-[#FFD700] font-bold text-center text-xl mb-6">
+                        Section {section}
                       </h3>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-6 md:grid-cols-10 gap-3">
                         {sectionSeats
                           .sort((a, b) =>
                             a.seatNumber.localeCompare(b.seatNumber),
                           )
-                          .map((seat) => (
-                            <button
-                              key={seat.id}
-                              onClick={() => toggleSeat(seat)}
-                              disabled={seat.isBooked}
-                              className={`w-full aspect-square rounded text-xs font-bold transition-all duration-200 border-2 ${
-                                seat.isBooked
-                                  ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
-                                  : isSeatSelected(seat.id)
-                                    ? getCategoryColor(selectedCategory) +
-                                      " scale-110 shadow-lg"
-                                    : "bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-105"
-                              }`}
-                              title={`${seat.seatNumber} - $${seat.ticket.price}`}
-                            >
-                              {seat.seatNumber.split("-")[1] || seat.seatNumber}
-                            </button>
-                          ))}
+                          .map((seat) => {
+                            const displaySeatNumber =
+                              seat.seatNumber.substring(1);
+
+                            return (
+                              <button
+                                key={seat.id}
+                                onClick={() => toggleSeat(seat)}
+                                disabled={seat.isBooked}
+                                className={`w-full aspect-square rounded-lg text-xs font-bold transition-all duration-200 border-2 ${
+                                  seat.isBooked
+                                    ? "bg-gray-600 border-gray-700 cursor-not-allowed opacity-50"
+                                    : isSeatSelected(seat.id)
+                                      ? getCategoryColor(selectedCategory) +
+                                        " scale-110 shadow-xl"
+                                      : "bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-105"
+                                }`}
+                                title={`${displaySeatNumber} - $${seat.ticket.price}`}
+                              >
+                                {displaySeatNumber}
+                              </button>
+                            );
+                          })}
                       </div>
                     </div>
                   ))}
@@ -413,19 +428,23 @@ export default function MatchDetails() {
             </h3>
 
             <div className="max-h-48 overflow-y-auto space-y-3 mb-6">
-              {selectedSeatsData.map((seat) => (
-                <div
-                  key={seat.id}
-                  className="flex justify-between items-center text-white bg-white/5 p-3 rounded-lg"
-                >
-                  <span className="font-semibold">
-                    {seat.section} - Seat {seat.seatNumber}
-                  </span>
-                  <span className="text-[#FFD700] font-bold">
-                    ${seat.ticket.price.toLocaleString()}
-                  </span>
-                </div>
-              ))}
+              {selectedSeatsData.map((seat) => {
+                const displaySeatNumber = seat.seatNumber.substring(1);
+
+                return (
+                  <div
+                    key={seat.id}
+                    className="flex justify-between items-center text-white bg-white/5 p-3 rounded-lg"
+                  >
+                    <span className="font-semibold">
+                      Section {seat.section} - Seat {displaySeatNumber}
+                    </span>
+                    <span className="text-[#FFD700] font-bold">
+                      ${seat.ticket.price.toLocaleString()}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
 
             <div className="border-t-2 border-white/20 pt-6 mb-6">
@@ -441,7 +460,7 @@ export default function MatchDetails() {
               onClick={() => {
                 const seatsData = selectedSeatsData.map((seat) => ({
                   id: seat.id,
-                  seatNumber: seat.seatNumber,
+                  seatNumber: seat.seatNumber.substring(1),
                   section: seat.section,
                   price: seat.ticket.price,
                 }));
