@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Suspense } from "react";
+import { API_URL } from "@/config/api";
 
 interface SeatData {
   id: string;
@@ -61,7 +62,7 @@ export default function Checkout() {
     try {
       const seatIds = seats.map((seat) => seat.id);
 
-      const response = await fetch("http://localhost:5000/api/bookings", {
+      const response = await fetch(`${API_URL}/api/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
