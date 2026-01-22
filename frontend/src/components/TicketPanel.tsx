@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { API_URL } from "@/config/api";
 
 interface Seat {
   seatNumber: string;
@@ -53,9 +54,7 @@ export default function TicketPanel({
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/orders/user/${userId}`
-      );
+      const response = await fetch(`${API_URL}/api/orders/user/${userId}`);
       const data = await response.json();
 
       if (data.success) {
@@ -138,7 +137,7 @@ export default function TicketPanel({
                     <div className="flex justify-between items-start mb-2">
                       <span
                         className={`${getStatusColor(
-                          order.status
+                          order.status,
                         )} text-white text-xs px-2 py-1 rounded font-bold`}
                       >
                         {order.status}
@@ -173,8 +172,8 @@ export default function TicketPanel({
                     <button
                       onClick={() => {
                         window.open(
-                          `http://localhost:5000/api/tickets/download/${order.orderId}/${idx}`,
-                          "_blank"
+                          `${API_URL}/api/tickets/download/${order.orderId}/${idx}`,
+                          "_blank",
                         );
                       }}
                       className="mt-3 w-full bg-[#FFD700] text-black px-3 py-2 rounded text-sm font-bold hover:bg-yellow-500 transition"
@@ -182,7 +181,7 @@ export default function TicketPanel({
                       📄 Download
                     </button>
                   </div>
-                ))
+                )),
               )}
             </div>
           )}
