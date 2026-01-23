@@ -48,7 +48,7 @@ export default function MatchDetails() {
 
   // Fetch match details
   useEffect(() => {
-    fetch(`${API_URL}/api/matches${matchId}`)
+    fetch(`${API_URL}/api/matches/${matchId}`)
       .then((res) => res.json())
       .then((data) => {
         setMatch(data.data);
@@ -62,7 +62,7 @@ export default function MatchDetails() {
 
   // Fetch ticket types
   useEffect(() => {
-    fetch(`${API_URL}/api/matches${matchId}/tickets`)
+    fetch(`${API_URL}/api/matches/${matchId}/tickets`)
       .then((res) => res.json())
       .then((data) => {
         setTickets(
@@ -80,7 +80,7 @@ export default function MatchDetails() {
       );
       if (selectedTicket) {
         fetch(
-          `${API_URL}/api/matches${matchId}/seats?ticketType=${selectedTicket.type}`,
+          `${API_URL}/api/matches/${matchId}/seats?ticketType=${selectedTicket.type}`,
         )
           .then((res) => res.json())
           .then((data) => {

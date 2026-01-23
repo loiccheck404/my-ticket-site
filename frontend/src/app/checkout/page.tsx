@@ -1,9 +1,8 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Suspense } from "react";
 import { API_URL } from "@/config/api";
 
 interface SeatData {
@@ -13,7 +12,7 @@ interface SeatData {
   price: number;
 }
 
-export default function Checkout() {
+function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isAuthenticated } = useAuth();
@@ -68,7 +67,7 @@ export default function Checkout() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: user.id, // Automatically use logged-in user's ID
+          userId: user.id,
           seatIds,
         }),
       });
@@ -76,9 +75,8 @@ export default function Checkout() {
       const data = await response.json();
 
       if (data.success) {
-        // Redirect to payment page!
         router.push(`/payment/${data.data.orderId}`);
-        localStorage.removeItem("pendingCheckout"); // Clear pending checkout
+        localStorage.removeItem("pendingCheckout");
       } else {
         alert(`Booking failed: ${data.message}`);
       }
@@ -106,7 +104,6 @@ export default function Checkout() {
     );
   }
 
-  // Show loading while checking auth
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -117,7 +114,6 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Header */}
       <div className="bg-gradient-to-r from-black via-gray-900 to-black border-b border-yellow-500/20 py-8">
         <div className="max-w-4xl mx-auto px-4">
           <button
@@ -131,7 +127,6 @@ export default function Checkout() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Order Summary */}
         <div className="bg-gray-900 p-6 rounded-lg border border-yellow-500/20 mb-6">
           <h2 className="text-2xl font-bold text-white mb-4">Order Summary</h2>
 
@@ -165,7 +160,6 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* User Information - Auto-filled from auth */}
         <div className="bg-gray-900 p-6 rounded-lg border border-yellow-500/20 mb-6">
           <h2 className="text-xl font-bold text-white mb-4">Booking For</h2>
           <div className="text-gray-300">
@@ -176,7 +170,6 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* Confirm Button */}
         <button
           onClick={handleBooking}
           disabled={loading}
@@ -186,5 +179,19 @@ export default function Checkout() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function Checkout() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-black flex items-center justify-center">
+          <p className="text-yellow-500 text-xl">Loading...</p>
+        </div>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
   );
 }

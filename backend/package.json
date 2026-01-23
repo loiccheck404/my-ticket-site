@@ -10,6 +10,7 @@
     "migrate": "dotenv -e .env -- prisma migrate deploy",
     "generate": "dotenv -e .env -- prisma generate",
     "db:push": "dotenv -e .env -- prisma db push",
+    "seed": "ts-node prisma/seed-matches.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

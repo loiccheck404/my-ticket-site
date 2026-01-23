@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import TicketPanel from "@/components/TicketPanel";
+import { API_URL } from "@/config/api";
 
 interface Match {
   id: string;
@@ -23,7 +24,7 @@ export default function Home() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/matches")
+    fetch(`${API_URL}/api/matches`)
       .then((res) => res.json())
       .then((data) => {
         setMatches(data.data);
@@ -112,7 +113,9 @@ export default function Home() {
             <span className="block bg-gradient-to-r from-[#FF6B35] via-[#FFD700] to-[#00BCD4] bg-clip-text text-transparent animate-float">
               WORLD CUP
             </span>
-            <span className="block text-white text-8xl md:text-[10rem]">2026</span>
+            <span className="block text-white text-8xl md:text-[10rem]">
+              2026
+            </span>
           </h1>
 
           <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
@@ -123,14 +126,28 @@ export default function Home() {
           </p>
 
           <div className="flex gap-4 justify-center flex-wrap">
-            <button 
-              onClick={() => document.getElementById('matches')?.scrollIntoView({ behavior: 'smooth' })}
+            <button
+              onClick={() =>
+                document
+                  .getElementById("matches")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
               className="group bg-gradient-to-r from-[#FF6B35] to-[#FFD700] text-white px-10 py-4 rounded-full font-bold text-lg hover:shadow-2xl hover:shadow-[#FF6B35]/50 transition-all transform hover:scale-105"
             >
               <span className="flex items-center gap-2">
                 Explore Matches
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                <svg
+                  className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
                 </svg>
               </span>
             </button>
@@ -142,16 +159,28 @@ export default function Home() {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-8 mt-16 max-w-3xl mx-auto">
             <div className="text-center">
-              <p className="text-5xl font-bebas bg-gradient-to-r from-[#FF6B35] to-[#FFD700] bg-clip-text text-transparent">48</p>
-              <p className="text-gray-400 text-sm uppercase tracking-wide">Teams</p>
+              <p className="text-5xl font-bebas bg-gradient-to-r from-[#FF6B35] to-[#FFD700] bg-clip-text text-transparent">
+                48
+              </p>
+              <p className="text-gray-400 text-sm uppercase tracking-wide">
+                Teams
+              </p>
             </div>
             <div className="text-center">
-              <p className="text-5xl font-bebas bg-gradient-to-r from-[#00BCD4] to-[#FFD700] bg-clip-text text-transparent">104</p>
-              <p className="text-gray-400 text-sm uppercase tracking-wide">Matches</p>
+              <p className="text-5xl font-bebas bg-gradient-to-r from-[#00BCD4] to-[#FFD700] bg-clip-text text-transparent">
+                104
+              </p>
+              <p className="text-gray-400 text-sm uppercase tracking-wide">
+                Matches
+              </p>
             </div>
             <div className="text-center">
-              <p className="text-5xl font-bebas bg-gradient-to-r from-[#FFD700] to-[#FF6B35] bg-clip-text text-transparent">16</p>
-              <p className="text-gray-400 text-sm uppercase tracking-wide">Cities</p>
+              <p className="text-5xl font-bebas bg-gradient-to-r from-[#FFD700] to-[#FF6B35] bg-clip-text text-transparent">
+                16
+              </p>
+              <p className="text-gray-400 text-sm uppercase tracking-wide">
+                Cities
+              </p>
             </div>
           </div>
         </div>
@@ -202,20 +231,49 @@ export default function Home() {
                   <h3 className="text-xl font-bold text-white mb-2 font-bebas tracking-wide">
                     {match.title}
                   </h3>
-                  
+
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-gray-400 text-sm">
-                      <svg className="w-4 h-4 text-[#FFD700]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <svg
+                        className="w-4 h-4 text-[#FFD700]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
                       </svg>
                       {match.venue}
                     </div>
                     <div className="flex items-center gap-2 text-gray-400 text-sm">
-                      <svg className="w-4 h-4 text-[#00BCD4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      <svg
+                        className="w-4 h-4 text-[#00BCD4]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
                       </svg>
-                      {new Date(match.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      {new Date(match.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </div>
                   </div>
 
@@ -224,7 +282,9 @@ export default function Home() {
                   </p>
 
                   <button
-                    onClick={() => (window.location.href = `/matches/${match.id}`)}
+                    onClick={() =>
+                      (window.location.href = `/matches/${match.id}`)
+                    }
                     className="w-full bg-gradient-to-r from-[#FF6B35] to-[#FFD700] text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-[#FF6B35]/50 transition-all transform group-hover:scale-105"
                   >
                     Book Tickets
@@ -241,24 +301,37 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>
-              <h3 className="text-[#FFD700] font-bebas text-2xl mb-4">FIFA WORLD CUP 2026</h3>
+              <h3 className="text-[#FFD700] font-bebas text-2xl mb-4">
+                FIFA WORLD CUP 2026
+              </h3>
               <p className="text-gray-400 text-sm">
-                Official ticketing platform for the world's biggest football tournament
+                Official ticketing platform for the world's biggest football
+                tournament
               </p>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li className="hover:text-[#FF6B35] transition cursor-pointer">Schedule</li>
-                <li className="hover:text-[#FF6B35] transition cursor-pointer">Venues</li>
-                <li className="hover:text-[#FF6B35] transition cursor-pointer">Teams</li>
-                <li className="hover:text-[#FF6B35] transition cursor-pointer">FAQ</li>
+                <li className="hover:text-[#FF6B35] transition cursor-pointer">
+                  Schedule
+                </li>
+                <li className="hover:text-[#FF6B35] transition cursor-pointer">
+                  Venues
+                </li>
+                <li className="hover:text-[#FF6B35] transition cursor-pointer">
+                  Teams
+                </li>
+                <li className="hover:text-[#FF6B35] transition cursor-pointer">
+                  FAQ
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">Powered By</h4>
               <p className="text-gray-400 text-sm">🔐 Blockchain Technology</p>
-              <p className="text-gray-400 text-sm">💳 Cryptocurrency Payments</p>
+              <p className="text-gray-400 text-sm">
+                💳 Cryptocurrency Payments
+              </p>
             </div>
           </div>
           <div className="border-t border-white/10 pt-8 text-center text-gray-500 text-sm">

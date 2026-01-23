@@ -171,9 +171,7 @@ export default function PaymentPage() {
     if (!orderId) return;
 
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/payment/status/${orderId}`,
-      );
+      const response = await fetch(`${API_URL}/api/payment/status/${orderId}`);
       const data = await response.json();
 
       if (data.success) {
