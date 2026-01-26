@@ -58,6 +58,84 @@ router.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
+// GET /api/matches/:id/tickets - Get ticket categories for a match
+router.get("/:id/tickets", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // First check if match exists
+    const match = await prisma.match.findUnique({
+      where: { id },
+    });
+
+    if (!match) {
+      return res.status(404).json({
+        success: false,
+        message: "Match not found",
+      });
+    }
+
+    // Get all tickets for this match
+    const tickets = await prisma.ticket.findMany({
+      where: { matchId: id },
+      orderBy: {
+        price: "asc", // Order by price
+      },
+    });
+
+    res.json({
+      success: true,
+      count: tickets.length,
+      data: tickets,
+    });
+  } catch (error) {
+    console.error("Error fetching tickets:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching tickets",
+    });
+  }
+});
+
+// GET /api/matches/:id/seats - Get available seats for a match
+router.get("/:id/seats", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // First check if match exists
+    const match = await prisma.match.findUnique({
+      where: { id },
+    });
+
+    if (!match) {
+      return res.status(404).json({
+        success: false,
+        message: "Match not found",
+      });
+    }
+
+    // Get all seats for this match
+    const seats = await prisma.seat.findMany({
+      where: { matchId: id },
+      orderBy: {
+        seatNumber: "asc",
+      },
+    });
+
+    res.json({
+      success: true,
+      count: seats.length,
+      data: seats,
+    });
+  } catch (error) {
+    console.error("Error fetching seats:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching seats",
+    });
+  }
+});
+
 // POST /api/matches - Create a new match
 router.post("/", async (req: Request, res: Response) => {
   try {
