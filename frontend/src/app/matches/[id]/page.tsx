@@ -22,16 +22,11 @@ interface Ticket {
 }
 
 interface Seat {
-  isBooked: any;
+  isBooked: boolean;
   id: string;
   seatNumber: string;
   row: string;
   section: string;
-  ticket: {
-    price: number;
-    category: number;
-    color: string;
-  };
 }
 
 export default function MatchDetails() {
@@ -86,7 +81,7 @@ export default function MatchDetails() {
         )
           .then((res) => res.json())
           .then((data) => {
-            setSeats(data.data);
+            setSeats(data.data || []);
           })
           .catch((error) => console.error("Error fetching seats:", error));
       }
@@ -106,8 +101,11 @@ export default function MatchDetails() {
     return selectedSeatsData.some((s) => s.id === seatId);
   };
 
-  const totalPrice = selectedSeatsData.reduce((total, seat) => {
-   return total + (tickets.find(t => t.category === selectedCategory)?.price || 0);
+  const getSelectedTicketPrice = () => {
+    return tickets.find((t) => t.category === selectedCategory)?.price || 0;
+  };
+
+  const totalPrice = selectedSeatsData.length * getSelectedTicketPrice();
 
   // Get category color classes
   const getCategoryColor = (category: number) => {
@@ -194,7 +192,10 @@ export default function MatchDetails() {
             {tickets.map((ticket) => (
               <button
                 key={ticket.id}
-                onClick={() => setSelectedCategory(ticket.category)}
+                onClick={() => {
+                  setSelectedCategory(ticket.category);
+                  setSelectedSeatsData([]);
+                }}
                 className={`p-6 rounded-xl font-semibold transition-all duration-300 border-2 ${
                   selectedCategory === ticket.category
                     ? getCategoryColor(ticket.category) +
@@ -211,125 +212,17 @@ export default function MatchDetails() {
                       {ticket.type}
                     </p>
                   </div>
-                  <p className="text-3xl font-bold mb-1">
+                  <p className="text-2xl font-bold">
                     ${ticket.price.toLocaleString()}
                   </p>
-                  <p className="text-sm opacity-80">
-                    {ticket.availableCount} seats left
+                  <p className="text-sm opacity-70">
+                    {ticket.availableCount} available
                   </p>
                 </div>
               </button>
             ))}
           </div>
         </div>
-
-        {/* RESIZED & CENTERED Curved Stadium Indicator */}
-        {selectedCategory !== null && (
-          <div className="mb-8 bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
-            <div className="flex items-center justify-center gap-6">
-              <div className="relative w-48 h-48 shrink-0">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  {/* All 4 Concentric circles */}
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="45"
-                    fill="none"
-                    stroke="rgb(234, 179, 8)"
-                    strokeWidth="2"
-                    opacity="0.4"
-                  />
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="35"
-                    fill="none"
-                    stroke="rgb(20, 184, 166)"
-                    strokeWidth="2"
-                    opacity="0.4"
-                  />
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="25"
-                    fill="none"
-                    stroke="rgb(59, 130, 246)"
-                    strokeWidth="2"
-                    opacity="0.4"
-                  />
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="15"
-                    fill="none"
-                    stroke="rgb(168, 85, 247)"
-                    strokeWidth="2"
-                    opacity="0.4"
-                  />
-                </svg>
-
-                {/* Green dots ONLY for selected category seats */}
-                {selectedSeatsData
-                  .filter((seat) => seat.ticket.category === selectedCategory)
-                  .map((seat, index, filteredSeats) => {
-                    const totalSeats = filteredSeats.length;
-                    const angle =
-                      (index / totalSeats) * 2 * Math.PI - Math.PI / 2;
-
-                    let radius = 0;
-                    if (selectedCategory === 1) radius = 15;
-                    else if (selectedCategory === 2) radius = 25;
-                    else if (selectedCategory === 3) radius = 35;
-                    else if (selectedCategory === 4) radius = 45;
-
-                    const x = 50 + radius * Math.cos(angle);
-                    const y = 50 + radius * Math.sin(angle);
-
-                    return (
-                      <div
-                        key={seat.id}
-                        className="absolute w-2.5 h-2.5 -translate-x-1/2 -translate-y-1/2 animate-pulse z-50"
-                        style={{ left: `${x}%`, top: `${y}%` }}
-                      >
-                        <div className="w-full h-full bg-green-500 rounded-full shadow-lg border border-white"></div>
-                        <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75"></div>
-                      </div>
-                    );
-                  })}
-              </div>
-              <div className="text-left">
-                <p className="text-white font-bold text-lg">
-                  Category {selectedCategory}
-                </p>
-                <p className="text-[#FFD700] text-sm">
-                  {selectedCategory === 1 && "Closest to field"}
-                  {selectedCategory === 2 && "Near the field"}
-                  {selectedCategory === 3 && "Mid-distance"}
-                  {selectedCategory === 4 && "Upper level"}
-                </p>
-                {selectedSeatsData.filter(
-                  (s) => s.ticket.category === selectedCategory,
-                ).length > 0 && (
-                  <p className="text-green-400 text-xs mt-2 flex items-center gap-1">
-                    <span className="w-2 h-2 bg-green-500 rounded-full inline-block"></span>
-                    {
-                      selectedSeatsData.filter(
-                        (s) => s.ticket.category === selectedCategory,
-                      ).length
-                    }{" "}
-                    seat
-                    {selectedSeatsData.filter(
-                      (s) => s.ticket.category === selectedCategory,
-                    ).length > 1
-                      ? "s"
-                      : ""}{" "}
-                    marked
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Stadium View */}
         {selectedCategory !== null && (
@@ -361,13 +254,12 @@ export default function MatchDetails() {
             >
               {/* Field */}
               <div className="bg-gradient-to-r from-green-600 via-green-500 to-green-600 text-white text-center py-8 mb-8 rounded-xl relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/field-lines.svg')] opacity-20"></div>
                 <p className="text-3xl font-bebas tracking-widest relative z-10">
                   ⚽ FOOTBALL FIELD ⚽
                 </p>
               </div>
 
-              {/* Single Section Display */}
+              {/* Seats */}
               <div className="max-w-4xl mx-auto">
                 {Object.entries(groupedSeats)
                   .sort(([a], [b]) => a.localeCompare(b))
@@ -384,7 +276,6 @@ export default function MatchDetails() {
                           .map((seat) => {
                             const displaySeatNumber =
                               seat.seatNumber.substring(1);
-
                             return (
                               <button
                                 key={seat.id}
@@ -398,7 +289,7 @@ export default function MatchDetails() {
                                         " scale-110 shadow-xl"
                                       : "bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-105"
                                 }`}
-                                title={`${displaySeatNumber}`}
+                                title={displaySeatNumber}
                               >
                                 {displaySeatNumber}
                               </button>
@@ -432,7 +323,6 @@ export default function MatchDetails() {
             <div className="max-h-48 overflow-y-auto space-y-3 mb-6">
               {selectedSeatsData.map((seat) => {
                 const displaySeatNumber = seat.seatNumber.substring(1);
-
                 return (
                   <div
                     key={seat.id}
@@ -442,7 +332,7 @@ export default function MatchDetails() {
                       Section {seat.section} - Seat {displaySeatNumber}
                     </span>
                     <span className="text-[#FFD700] font-bold">
-                      ${seat.ticket.price.toLocaleString()}
+                      ${getSelectedTicketPrice().toLocaleString()}
                     </span>
                   </div>
                 );
@@ -464,7 +354,7 @@ export default function MatchDetails() {
                   id: seat.id,
                   seatNumber: seat.seatNumber.substring(1),
                   section: seat.section,
-                  price: seat.ticket.price,
+                  price: getSelectedTicketPrice(),
                 }));
 
                 router.push(
