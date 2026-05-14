@@ -66,7 +66,9 @@ export default function MatchDetails() {
       .then((res) => res.json())
       .then((data) => {
         setTickets(
-          data.data.sort((a: Ticket, b: Ticket) => a.category - b.category),
+          (data.data || []).sort(
+            (a: Ticket, b: Ticket) => a.category - b.category,
+          ),
         );
       })
       .catch((error) => console.error("Error fetching tickets:", error));
@@ -105,8 +107,7 @@ export default function MatchDetails() {
   };
 
   const totalPrice = selectedSeatsData.reduce((total, seat) => {
-    return total + seat.ticket.price;
-  }, 0);
+   return total + (tickets.find(t => t.category === selectedCategory)?.price || 0);
 
   // Get category color classes
   const getCategoryColor = (category: number) => {
@@ -397,7 +398,7 @@ export default function MatchDetails() {
                                         " scale-110 shadow-xl"
                                       : "bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-105"
                                 }`}
-                                title={`${displaySeatNumber} - $${seat.ticket.price}`}
+                                title={`${displaySeatNumber}`}
                               >
                                 {displaySeatNumber}
                               </button>

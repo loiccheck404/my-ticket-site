@@ -206,7 +206,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {matches.map((match, index) => (
+            {(matches ?? []).map((match, index) => (
               <div
                 key={match.id}
                 className="group relative bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/10 hover:border-[#FF6B35]/50 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-[#FF6B35]/20"
